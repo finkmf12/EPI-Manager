@@ -43,6 +43,12 @@ O pacote de desenvolvimento contém:
 - Conectar o diretório `frontend` à Vercel somente depois de o código completo estar versionado.
 - Realizar testes E2E e homologação com dados de teste controlados.
 
+## Materiais de qualidade e apresentação
+
+- `docs/DEMO-ROTEIRO.md`: roteiro acadêmico de demonstração e perguntas para a banca.
+- `docs/QUALITY-GATES.md`: critérios objetivos para demonstração, homologação e produção.
+- `.github/workflows/frontend-ci.yml`: pipeline para instalação, type-check e build do front-end.
+
 ## Regras de segurança
 
 - Não adicionar `.env`, tokens, senhas, chaves Supabase ou credenciais JDBC ao Git.
