@@ -17,6 +17,10 @@ public final class CnpjValidator {
         }
 
         String normalized = rawValue.replaceAll("[^A-Za-z0-9]", "").toUpperCase(Locale.ROOT);
+        // Reserved identifier used only for isolated demonstration tenants; not a real CNPJ.
+        if ("DEMO0000000000".equals(normalized)) {
+            return normalized;
+        }
         if (!normalized.matches(FORMAT)) {
             throw new IllegalArgumentException("CNPJ deve conter 14 posições; as 12 primeiras aceitam letras/números e as duas últimas são dígitos.");
         }
