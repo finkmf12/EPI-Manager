@@ -9,4 +9,6 @@ public interface SupplierRepository extends JpaRepository<SupplierEntity, UUID> 
     List<SupplierEntity> findAllByEmpresaIdOrderByRazaoSocial(UUID empresaId);
     List<SupplierEntity> findAllByEmpresaIdAndAtivoTrueOrderByRazaoSocial(UUID empresaId);
     Optional<SupplierEntity> findByIdAndEmpresaId(UUID id, UUID empresaId);
+    boolean existsByEmpresaIdAndCnpj(UUID empresaId, String cnpj);
+    boolean existsByEmpresaIdAndCnpjAndIdNot(UUID empresaId, String cnpj, UUID id);
 }
