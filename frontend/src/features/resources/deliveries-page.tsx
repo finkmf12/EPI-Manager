@@ -70,8 +70,6 @@ export function DeliveriesPage() {
   useEffect(() => { void load() }, [session?.accessToken])
 
   const collaboratorNames = useMemo(() => new Map(collaborators.map((person) => [person.id, person.nome])), [collaborators])
-  const epiNames = useMemo(() => new Map(epis.map((epi) => [epi.id, epi.nome])), [epis])
-  const lotNames = useMemo(() => new Map(lots.map((lot) => [lot.id, lot.codigoLote])), [lots])
 
   function updateLine(key: string, field: keyof DraftLine, value: string) {
     setLines((current) => current.map((line) => line.key === key
@@ -98,7 +96,7 @@ export function DeliveriesPage() {
       await apiRequest<Delivery>('/api/v1/deliveries', {
         method: 'POST',
         body: JSON.stringify({
-          colaboradorId,
+          colaboradorId: collaboratorId,
           dataEntrega: dataEntrega || null,
           observacao: observacao.trim() || null,
           itens: validLines.map((line) => ({
