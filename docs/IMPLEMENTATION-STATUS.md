@@ -16,6 +16,7 @@
 - Endpoints REST documentados por OpenAPI.
 - Regras de integridade de estoque e rastreabilidade apoiadas pelo banco de dados.
 - Controle de acesso por perfil e escopo da empresa.
+- Serviço de colaboradores valida a unicidade da matrícula dentro da empresa tanto no cadastro quanto na edição.
 
 ## Front-End
 
