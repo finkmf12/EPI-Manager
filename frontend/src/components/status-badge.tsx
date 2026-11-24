@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 
 const positive = new Set(['ATIVO', 'ATIVA', 'CONFIRMADA', 'REUTILIZAVEL', 'DISPONIVEL'])
-const warning = new Set(['RASCUNHO', 'ATENCAO', 'ABAIXO DO MINIMO', 'PENDENTE'])
+const warning = new Set(['RASCUNHO', 'ATENCAO', 'ABAIXO DO MINIMO', 'PENDENTE', 'AFASTADO'])
 const negative = new Set(['INATIVO', 'INATIVA', 'CANCELADA', 'VENCIDO', 'DANIFICADO', 'DESCARTE', 'BLOQUEADO'])
 
 export function StatusBadge({ value }: { value: string | boolean | null | undefined }) {
