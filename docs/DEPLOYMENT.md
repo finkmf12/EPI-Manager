@@ -1,35 +1,72 @@
-# Hospedagem — EPI Manager
+# Implantação — EPI Manager
+
+## Ambientes publicados
+
+Os projetos abaixo estão conectados ao repositório `finkmf12/EPI-Manager`, branch `main`.
+
+| Componente | Projeto Vercel | Endereço principal | Estado verificado |
+| --- | --- | --- | --- |
+| Front-end | `epi-manager-frontend` | [https://epimanager.vercel.app](https://epimanager.vercel.app) | Production deployment READY |
+| Back-end | `epimanager` | [https://epimanager-academy-cda9.vercel.app](https://epimanager-academy-cda9.vercel.app) | Production deployment READY |
+
+O status READY informa que a implantação foi concluída pela Vercel. Ele não substitui testes HTTP, autenticação, acesso ao banco ou homologação dos fluxos.
 
 ## Front-end — Vercel
 
-- Projeto: `epi-manager-web`
-- ID: `prj_7xU7x0ajeucNvzRA2Ui6S5WyxqHE`
-- Time: `Academy` (`academy-cda9`)
-- Framework: Vite
-- Diretório raiz: `frontend`
-- Instalação: `npm install`
-- Build: `npm run build`
-- Saída: `dist`
-- Projeto confirmado pela API da Vercel; ainda sem deploy, domínio, repositório ou variáveis configuradas.
-- O código Vite/React está em `frontend/`. Antes do primeiro deploy: gerar/versionar `package-lock.json`, definir `VITE_API_BASE_URL` com a URL pública do Back-End e configurar `CORS_ALLOWED_ORIGINS` na API com o domínio Vercel definitivo.
+- Framework: Vite.
+- Diretório raiz: `frontend`.
+- Comando de instalação: `npm install`.
+- Comando de build: `npm run build`.
+- Diretório de saída: `dist`.
+- Variável necessária: `VITE_API_BASE_URL`, apontando para a URL pública do Back-end.
 
-O projeto Vercel está protegido por Vercel Authentication para deployments sem domínio customizado. Não há código de front-end publicado ainda.
+A variável `VITE_API_BASE_URL` é incorporada durante o build. Depois de alterá-la no painel da Vercel, é necessário criar uma nova implantação do front-end.
 
-## Back-end — Spring Boot
+## Back-end — Vercel
 
-A API Java deve ser publicada num host de back-end que execute um serviço Spring Boot persistente ou um container compatível. O projeto ainda não foi publicado e o provedor não foi escolhido.
+- Projeto: `epimanager`.
+- Tecnologia: Java 21 / Spring Boot 4.2.
+- Implantação baseada no contêiner configurado no repositório.
+- Região observada: `gru1`.
 
-Antes de provisionar o host:
+Variáveis de ambiente necessárias:
 
-1. Guardar a senha de `epi_manager_app` no cofre de secrets do host. Se o valor original não estiver disponível, redefina uma nova senha no SQL Editor e armazene-a diretamente no cofre; o banco não permite recuperar o texto da senha atual.
-2. Guardar `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` e `JWT_SECRET_BASE64` no cofre de secrets do host.
-3. Configurar `DB_USERNAME` no formato `epi_manager_app.<project-ref>` ao usar o Session Pooler; copiar host e porta diretamente do diálogo Connect do Supabase, sem derivar o endereço pela região.
-4. Configurar `CORS_ALLOWED_ORIGINS` com o domínio real do front-end.
-5. Configurar probes de health em `/actuator/health`.
-6. Executar build e testes com Maven em ambiente com acesso ao Maven Central.
+- `DB_URL`
+- `DB_USERNAME`
+- `DB_PASSWORD`
+- `JWT_SECRET_BASE64`
+- `JWT_ISSUER`
+- `CORS_ALLOWED_ORIGINS`
+- `PORT`
 
-## GitHub
+Não registre valores secretos neste documento, em commits ou em capturas de tela públicas. Configure `CORS_ALLOWED_ORIGINS` com as origens exatas do front-end; não use curingas em produção.
 
-O repositório dedicado `epi-manager` ainda não existe. A conexão GitHub disponível neste ambiente permite ler e gravar arquivos em repositórios existentes, mas não expõe a ação de criação de repositório. O pacote pode ser enviado a um novo repositório após sua criação.
+## Banco de dados — Supabase
 
-Não conectar o projeto Vercel a um repositório de outro projeto.
+- Banco PostgreSQL hospedado na região de São Paulo.
+- Schema de aplicação: `epi_manager`.
+- Conexão da API com o papel dedicado `epi_manager_app`.
+- RLS habilitado e forçado nas tabelas aplicáveis.
+- O contexto da empresa deve ser definido dentro da transação antes das consultas protegidas.
+
+Use os dados de conexão fornecidos pelo painel do Supabase. Não derive host, porta ou credenciais por suposição.
+
+## Processo de publicação
+
+1. Enviar as alterações revisadas para a branch `main`.
+2. Acompanhar os workflows do GitHub Actions.
+3. Acompanhar a implantação correspondente na Vercel.
+4. Confirmar o estado READY e o commit publicado.
+5. Executar testes de saúde, autenticação e operações principais.
+6. Verificar logs e corrigir erros antes de considerar a versão homologada.
+
+## Diagnóstico rápido
+
+- **Erro de conexão no navegador:** conferir `VITE_API_BASE_URL` e publicar novamente o front-end.
+- **Erro de CORS:** conferir a origem exata acessada pelo navegador em `CORS_ALLOWED_ORIGINS` e fazer redeploy do back-end.
+- **Erro de banco:** verificar as variáveis JDBC, credenciais e disponibilidade do Supabase sem expor valores secretos.
+- **Deploy READY, mas fluxo falha:** consultar logs recentes da aplicação e testar o endpoint envolvido; READY não significa que a aplicação foi integralmente homologada.
+
+## Segurança operacional
+
+Nunca publique senhas, tokens, chaves privadas ou dados reais de colaboradores. Restrinja o acesso ao painel Vercel e Supabase e mantenha um procedimento de backup e recuperação antes de utilizar dados reais.
