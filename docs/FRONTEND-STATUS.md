@@ -1,30 +1,45 @@
 # Status do front-end — EPI Manager
 
-## Estrutura entregue
+Última revisão: 2026-11-24
 
-- React + TypeScript com Vite e Tailwind CSS v4.
-- Login com e-mail/senha e seleção de empresa usando os contratos reais da API (`/api/v1/auth/login`, `/api/v1/auth/select-company` e `/api/v1/companies/current`).
-- Contexto de sessão em memória; nenhum token é persistido em `localStorage` ou `sessionStorage`.
-- Dashboard solicita dados reais de colaboradores, EPIs, estoque, entregas e devoluções; não utiliza dados de demonstração.
-- Consultas REST para colaboradores, setores, EPIs, categorias, fornecedores, entregas e devoluções.
-- Estoque com consultas de saldos, lotes e movimentos e formulário funcional de recebimento (`POST /api/v1/stock/receipts`).
-- Entregas: criação em rascunho, seleção de colaborador/EPI/lote, confirmação com baixa de estoque e cancelamento de rascunhos.
-- Devoluções: seleção de entrega confirmada, cálculo do saldo ainda não devolvido, classificação reutilizável/danificado/descarte e confirmação/cancelamento.
-- Tela de configuração da URL da API e das informações da sessão.
-- Componentes visuais responsivos e arquivo `components.json` preparado para evolução com shadcn/ui.
+## Estrutura e tecnologias
 
-## Validações deste ambiente
+- React 19, TypeScript, Vite e Tailwind CSS v4.
+- Integração REST com a API Java/Spring Boot.
+- Sessão mantida em memória; tokens não são gravados em `localStorage` ou `sessionStorage`.
+- Interface responsiva com navegação por módulos e escopo da empresa selecionada.
 
-- Node.js disponível: `v22.16.0`.
-- Sintaxe de 18 arquivos TypeScript/TSX verificada pela API do compilador TypeScript: sem diagnósticos sintáticos.
-- `npm install` não concluiu por indisponibilidade de acesso ao registro npm/DNS neste ambiente.
-- Consequentemente, `npm run typecheck`, `npm run build` e testes de navegador ainda não foram executados com dependências reais.
-- `package-lock.json` ainda não foi gerado; deve ser criado num ambiente com acesso ao registro npm e incluído no Git antes de habilitar deploy automático.
+## Módulos implementados
 
-## Pendências funcionais
+- **Autenticação:** login, seleção de empresa e cadastro inicial conforme contratos disponíveis na API.
+- **Dashboard:** indicadores e gráficos alimentados por consultas reais de colaboradores, EPIs, estoque, entregas, devoluções e auditoria.
+- **Colaboradores, setores, categorias e fornecedores:** telas de consulta conectadas à API.
+- **Catálogo de EPIs:** cadastro, edição, pesquisa, filtros por situação e inativação preservando o histórico. Exibe validade do CA e classifica os registros como regular, em atenção ou vencido.
+- **Estoque:** consulta de saldos, lotes e movimentações; registro de recebimento com criação de lote.
+- **Entregas:** criação de rascunho, seleção de colaborador/EPI/lote, confirmação e cancelamento de rascunhos; emissão de termo imprimível para entrega confirmada.
+- **Devoluções:** seleção de entrega confirmada, controle de quantidades pendentes, classificação da condição e confirmação/cancelamento.
+- **Relatórios:** consultas operacionais, filtros por período, exportação CSV e impressão.
+- **Notificações:** alertas calculados para CA, lotes próximos do vencimento/vencidos, estoque abaixo do mínimo e entregas em rascunho.
+- **Auditoria:** consulta do histórico de operações conforme permissão do perfil.
+- **Configurações:** consulta da sessão e configuração do endereço da API.
 
-- Formulários de criação/edição para colaboradores, setores, EPIs, categorias e fornecedores; telas de detalhe e consulta avançada de entregas/devoluções.
-- Renovação/rotatividade de token e recuperação de senha.
-- Testes automatizados de componentes e testes HTTP integrados com o Back-End.
+## Regras de interface e segurança
 
-O estado atual é uma interface funcional inicial para autenticação, consulta e recebimento de estoque, mas não deve ser apresentada como versão de produção completa.
+- Operações de escrita são exibidas conforme o perfil e também protegidas pela autorização da API.
+- Os dados operacionais são consultados com token de acesso e escopo da empresa ativa.
+- A interface não apresenta registros fictícios quando a API não retorna dados.
+- Inativação é utilizada em vez de exclusão física nos cadastros com histórico.
+- Alertas são informativos e não alteram estoque ou registros automaticamente.
+
+## Validação automatizada
+
+- Workflow `.github/workflows/frontend-ci.yml` executa instalação de dependências, verificação TypeScript e build de produção.
+- A implementação do Catálogo de EPIs e os estilos responsivos passaram no GitHub Actions em 24/11/2026.
+- A aprovação do build confirma compilação e tipagem; não substitui testes E2E, homologação visual ou validação de fluxos com usuários reais.
+
+## Próximas melhorias
+
+- Formulários completos de manutenção para colaboradores, setores, categorias e fornecedores.
+- Testes automatizados de componentes e testes HTTP integrados.
+- Testes E2E dos fluxos críticos, incluindo autenticação multiempresa, recebimento, entrega e devolução.
+- Melhorias de acessibilidade e validação de formulários.
