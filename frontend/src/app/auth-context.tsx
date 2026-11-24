@@ -11,6 +11,8 @@ import type {
   CompanyMembership,
   CurrentCompanyResponse,
   LoginResponse,
+  RegisterCompanyRequest,
+  RegisterCompanyResponse,
   SelectCompanyResponse,
 } from '@/api/types'
 
@@ -36,6 +38,7 @@ type AuthContextValue = {
   pendingSelection: PendingSelection | null
   isAuthenticating: boolean
   login: (email: string, password: string) => Promise<void>
+  registerCompany: (request: RegisterCompanyRequest) => Promise<void>
   selectCompany: (company: CompanyMembership) => Promise<void>
   cancelCompanySelection: () => void
   logout: () => void
@@ -61,6 +64,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         companies: result.companies,
         expiresInSeconds: result.expiresInSeconds,
       })
+    } finally {
+      setIsAuthenticating(false)
+    }
+  }, [])
+
+  const registerCompany = useCallback(async (request: RegisterCompanyRequest) => {
+    setIsAuthenticating(true)
+    try {
+      const registered = await apiRequest<RegisterCompanyResponse>(
+        '/api/v1/auth/register-company',
+        {
+          method: 'POST',
+          body: JSON.stringify(request),
+        },
+      )
+      const currentCompany = await apiRequest<CurrentCompanyResponse>(
+        '/api/v1/companies/current',
+        {},
+        registered.accessToken,
+      )
+      setSession({
+        accessToken: registered.accessToken,
+        user: {
+          id: registered.userId,
+          name: request.nomeAdministrador,
+          email: registered.userEmail,
+        },
+        companyId: registered.companyId,
+        companyName: currentCompany.tradeName || currentCompany.legalName,
+        companyProfile: registered.companyProfile,
+        expiresInSeconds: registered.expiresInSeconds,
+      })
+      setPendingSelection(null)
     } finally {
       setIsAuthenticating(false)
     }
@@ -108,10 +144,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     pendingSelection,
     isAuthenticating,
     login,
+    registerCompany,
     selectCompany,
     cancelCompanySelection,
     logout,
-  }), [session, pendingSelection, isAuthenticating, login, selectCompany, cancelCompanySelection, logout])
+  }), [session, pendingSelection, isAuthenticating, login, registerCompany, selectCompany, cancelCompanySelection, logout])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
