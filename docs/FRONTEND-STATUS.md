@@ -53,3 +53,7 @@
 ## Gestão de categorias
 
 A tela `/app/categories` foi implementada com consulta autenticada à API, cadastro e edição de categorias, pesquisa por nome/descrição, filtro por situação, indicadores de ativos/inativos e EPIs classificados, contagem de EPIs vinculados e inativação/reativação conforme perfil. A tela preserva o histórico e não utiliza dados fictícios. A validação de compilação e tipos está em execução no CI após a integração da rota.
+
+## Aprimoramentos do estoque
+
+A tela de estoque recebeu pesquisa contextual por aba e filtros operacionais: saldos abaixo do mínimo ou de EPIs inativos; lotes válidos, próximos do vencimento (até 30 dias) ou vencidos; e movimentações por entrada, saída ou devolução. Os resultados exibem a quantidade de registros filtrados. O botão de recebimento agora aparece somente para ADMIN e ALMOXARIFE, de acordo com a autorização da API. A validação de build e tipos está em andamento no CI.
