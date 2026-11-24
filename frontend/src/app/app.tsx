@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from '@/app/auth-context'
 import { AppLayout } from '@/layouts/app-layout'
 import { LoginPage } from '@/features/auth/login-page'
+import { RegisterPage } from '@/features/auth/register-page'
 import { DashboardPage } from '@/features/dashboard/dashboard-page'
 import { ResourcePage } from '@/features/resources/resource-page'
 import { SettingsPage } from '@/features/resources/settings-page'
@@ -25,6 +26,7 @@ export function App() {
     <Routes>
       <Route path="/" element={<HomeRedirect />} />
       <Route path="/login" element={session ? <Navigate to="/app" replace /> : <LoginPage />} />
+      <Route path="/register" element={session ? <Navigate to="/app" replace /> : <RegisterPage />} />
       <Route path="/app" element={<ProtectedLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="collaborators" element={<ResourcePage resourceKey="collaborators" />} />
