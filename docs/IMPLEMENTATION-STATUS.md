@@ -2,60 +2,54 @@
 
 Última revisão: 2026-11-24
 
-## Infraestrutura confirmada
+## Infraestrutura
 
-- Projeto Supabase `EPI Manager`, região `sa-east-1`, PostgreSQL 17.12, estado `ACTIVE_HEALTHY`.
-- Schema de domínio isolado em `epi_manager`.
-- 17 tabelas, 34 políticas RLS e 28 gatilhos.
-- RLS forçado nas tabelas de domínio.
-- Migrações registradas no Supabase: 8.
-- Advisors de segurança e saúde sem alertas.
-- Nenhum dado de teste persistente.
+- Banco PostgreSQL hospedado no Supabase, com schema de domínio `epi_manager`.
+- Isolamento multiempresa implementado com contexto de tenant e políticas de Row Level Security.
+- Acesso da API realizado por credenciais de runtime; segredos não devem ser versionados.
+- Migrações e scripts de verificação de banco versionados em `database/`.
 
-## Fluxos verificados no banco
+## Back-End
 
-Teste executado dentro de transação com rollback:
+- Java 21 e Spring Boot.
+- Módulos de autenticação, empresas, setores, colaboradores, catálogo de EPIs, fornecedores, estoque, entregas, devoluções e auditoria.
+- Endpoints REST documentados por OpenAPI.
+- Regras de integridade de estoque e rastreabilidade apoiadas pelo banco de dados.
+- Controle de acesso por perfil e escopo da empresa.
 
-1. Entrada de 8 unidades no lote.
-2. Entrega confirmada de 3 unidades.
-3. Devolução confirmada de 2 unidades reutilizáveis.
-4. Devolução confirmada de 1 unidade danificada.
-5. Saldo final esperado: 7 unidades.
-6. Movimentos registrados no ledger: entrada 8, saída 3 e devolução 2.
+## Front-End
 
-O cenário passou e foi revertido integralmente ao final.
+- React 19, TypeScript, Vite e Tailwind CSS v4.
+- Dashboard, consultas cadastrais, catálogo de EPIs com cadastro/edição/inativação, estoque, entregas, devoluções, relatórios, notificações, auditoria e configurações.
+- Emissão de termo de entrega para impressão.
+- Alertas de conformidade de CA e validade de lotes, estoque mínimo e entregas pendentes.
+- Consulte `docs/FRONTEND-STATUS.md` para o detalhamento por módulo.
 
-## Aplicação
+## Qualidade e validação
 
-O pacote de desenvolvimento contém:
+- Pipeline de CI do front-end executa instalação, type-check e build de produção.
+- O Catálogo de EPIs, sua integração de rota e estilos responsivos passaram no GitHub Actions em 24/11/2026.
+- O pipeline de back-end também está versionado; consultar a execução mais recente antes de declarar uma nova validação.
+- Verificações do banco e roteiro de demonstração estão documentados em `database/verification/` e `docs/DEMO-ROTEIRO.md`.
 
-- API Java 21 / Spring Boot, com módulos de autenticação, empresas, setores, colaboradores, catálogo, fornecedores, estoque, entregas e devoluções.
-- Frontend React / TypeScript / Vite com telas de login, dashboard, cadastros, estoque, entregas e devoluções.
-- Documentação de arquitetura, segurança, contratos e implantação.
-- Migrações incrementais e scripts de verificação do banco.
+## Pendências antes de produção
 
-## Pendências que impedem produção
+- Executar testes E2E completos em ambiente controlado.
+- Homologar autenticação, troca de empresa e permissões com contas de cada perfil.
+- Validar os fluxos operacionais com dados de teste e cenários de erro.
+- Revisar monitoramento, backup, recuperação e política de retenção.
+- Confirmar a arquitetura de hospedagem da API Java e os segredos de produção.
+- Realizar revisão final de segurança e acessibilidade.
 
-- Executar `mvn test` e `mvn package` em ambiente com Maven e acesso ao repositório de dependências.
-- Executar `npm ci`, `npm run typecheck` e `npm run build` com lockfile gerado.
-- Revisar e validar onboarding multiempresa e autenticação ponta a ponta com credenciais de runtime.
-- Publicar a API Java em serviço de contêineres e configurar secrets fora do Git.
-- Conectar o diretório `frontend` à Vercel somente depois de o código completo estar versionado.
-- Realizar testes E2E e homologação com dados de teste controlados.
+## Materiais de apresentação
 
-## Materiais de qualidade e apresentação
+- `docs/DEMO-ROTEIRO.md`: roteiro acadêmico de demonstração.
+- `docs/QUALITY-GATES.md`: critérios de qualidade.
+- `docs/REGRAS-DE-NEGOCIO.md`: regras de negócio.
+- `docs/ARCHITECTURE.md` e `docs/diagramas-uml.md`: arquitetura e diagramas.
 
-- `docs/DEMO-ROTEIRO.md`: roteiro acadêmico de demonstração e perguntas para a banca.
-- `docs/QUALITY-GATES.md`: critérios objetivos para demonstração, homologação e produção.
-- `.github/workflows/frontend-ci.yml`: pipeline para instalação, type-check e build do front-end.
+## Segurança
 
-## Integração contínua
-
-- Workflows de front-end e back-end estão versionados. As primeiras execuções falharam antes de compilar porque `frontend/` e `backend/pom.xml` não existem no checkout remoto; ver `docs/CI-STATUS.md`.
-- Os gatilhos foram ajustados para aguardar alterações nos diretórios de código. Nenhum build foi aprovado ainda.
-
-## Regras de segurança
-
-- Não adicionar `.env`, tokens, senhas, chaves Supabase ou credenciais JDBC ao Git.
-- Não usar a chave `service_role` no navegador.
-- Não liberar produção antes de concluir as pendências acima.
+- Nunca adicionar arquivos `.env`, senhas, tokens, chaves Supabase ou credenciais JDBC ao Git.
+- Nunca expor a chave `service_role` no navegador.
+- A aprovação do CI não equivale a homologação ou autorização para uso em produção.
