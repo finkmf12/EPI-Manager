@@ -57,3 +57,7 @@
 - Nunca adicionar arquivos `.env`, senhas, tokens, chaves Supabase ou credenciais JDBC ao Git.
 - Nunca expor a chave `service_role` no navegador.
 - A aprovação do CI não equivale a homologação ou autorização para uso em produção.
+
+## Categorias
+
+O módulo de categorias possui cadastro, edição, listagem por empresa, filtro de ativos/inativos, validação de nome único por empresa na camada de serviço e reativação administrativa. A API mantém o isolamento por empresa e preserva os registros relacionados ao inativar uma categoria. A validação automatizada do backend está em execução após as alterações.
