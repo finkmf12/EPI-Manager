@@ -9,9 +9,6 @@ on:
       - 'desktop/**'
       - '.github/workflows/desktop-windows.yml'
 
-permissions:
-  contents: write
-
 jobs:
   build-windows:
     runs-on: windows-latest
@@ -34,12 +31,10 @@ jobs:
         working-directory: desktop
         run: npm run dist:win
 
-      - name: Publish installer on GitHub Releases
-        uses: softprops/action-gh-release@v2
+      - name: Upload Windows installer
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: desktop-v1.0.0
-          name: EPI Manager para Windows v1.0.0
-          target_commitish: ${{ github.sha }}
-          files: desktop/dist/*.exe
-          draft: false
-          prerelease: false
+          name: epi-manager-windows-installer
+          path: desktop/dist/*.exe
+          if-no-files-found: error
+          retention-days: 30
