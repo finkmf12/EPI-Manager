@@ -1,10 +1,8 @@
 # Vercel Container Runtime entrypoint for the Spring Boot API.
-# Keep this file aligned with Dockerfile; Vercel detects Dockerfile.vercel
-# and builds the API as a stateless HTTP container function.
+# Keep this image aligned with the Java 21 backend and listen on Vercel's PORT.
 FROM maven:3.9.11-eclipse-temurin-21 AS build
 WORKDIR /workspace
 COPY pom.xml .
-RUN mvn -B -q dependency:go-offline
 COPY src ./src
 RUN mvn -B -DskipTests package
 
