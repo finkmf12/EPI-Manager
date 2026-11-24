@@ -1,5 +1,6 @@
 package com.visage.epimanager.sector;
 
+import com.visage.epimanager.common.ConflictException;
 import com.visage.epimanager.common.ResourceNotFoundException;
 import com.visage.epimanager.sector.dto.CreateSetorRequest;
 import com.visage.epimanager.sector.dto.SetorResponse;
@@ -27,58 +28,62 @@ public class SetorService {
     @Transactional(readOnly = true)
     public List<SetorResponse> list(Jwt jwt, boolean includeInactive) {
         UUID companyId = activateTenant(jwt);
-        List<SetorEntity> entities = includeInactive
-                ? repository.findAllByEmpresaIdOrderByNome(companyId)
-                : repository.findAllByEmpresaIdAndAtivoTrueOrderByNome(companyId);
+        List<SetorEntity> entities = includeInactive ? repository.findAllByEmpresaIdOrderByNome(companyId) : repository.findAllByEmpresaIdAndAtivoTrueOrderByNome(companyId);
         return entities.stream().map(SetorResponse::from).toList();
     }
 
     @Transactional(readOnly = true)
     public SetorResponse findById(Jwt jwt, UUID setorId) {
         UUID companyId = activateTenant(jwt);
-        SetorEntity entity = repository.findByIdAndEmpresaId(setorId, companyId)
-                .orElseThrow(() -> new ResourceNotFoundException("Setor não encontrado."));
-        return SetorResponse.from(entity);
+        return SetorResponse.from(repository.findByIdAndEmpresaId(setorId, companyId).orElseThrow(() -> new ResourceNotFoundException("Setor não encontrado.")));
     }
 
     @Transactional
     public SetorResponse create(Jwt jwt, CreateSetorRequest request) {
         UUID companyId = activateTenant(jwt);
-        SetorEntity saved = repository.save(new SetorEntity(
-                companyId,
-                request.nome().trim(),
-                normalizeOptional(request.descricao())));
+        String nome = request.nome().trim();
+        validateUniqueName(companyId, nome, null);
+        SetorEntity saved = repository.save(new SetorEntity(companyId, nome, normalizeOptional(request.descricao())));
         return SetorResponse.from(saved);
     }
 
     @Transactional
     public SetorResponse update(Jwt jwt, UUID setorId, UpdateSetorRequest request) {
         UUID companyId = activateTenant(jwt);
-        SetorEntity entity = repository.findByIdAndEmpresaId(setorId, companyId)
-                .orElseThrow(() -> new ResourceNotFoundException("Setor não encontrado."));
-        entity.update(request.nome().trim(), normalizeOptional(request.descricao()));
+        SetorEntity entity = repository.findByIdAndEmpresaId(setorId, companyId).orElseThrow(() -> new ResourceNotFoundException("Setor não encontrado."));
+        String nome = request.nome().trim();
+        validateUniqueName(companyId, nome, setorId);
+        entity.update(nome, normalizeOptional(request.descricao()));
         return SetorResponse.from(entity);
     }
 
     @Transactional
     public void deactivate(Jwt jwt, UUID setorId) {
         UUID companyId = activateTenant(jwt);
-        SetorEntity entity = repository.findByIdAndEmpresaId(setorId, companyId)
-                .orElseThrow(() -> new ResourceNotFoundException("Setor não encontrado."));
+        SetorEntity entity = repository.findByIdAndEmpresaId(setorId, companyId).orElseThrow(() -> new ResourceNotFoundException("Setor não encontrado."));
         entity.deactivate();
     }
 
+    @Transactional
+    public SetorResponse activate(Jwt jwt, UUID setorId) {
+        UUID companyId = activateTenant(jwt);
+        SetorEntity entity = repository.findByIdAndEmpresaId(setorId, companyId).orElseThrow(() -> new ResourceNotFoundException("Setor não encontrado."));
+        entity.activate();
+        return SetorResponse.from(entity);
+    }
+
+    private void validateUniqueName(UUID companyId, String nome, UUID ignoredId) {
+        boolean exists = ignoredId == null ? repository.existsByEmpresaIdAndNomeIgnoreCase(companyId, nome) : repository.existsByEmpresaIdAndNomeIgnoreCaseAndIdNot(companyId, nome, ignoredId);
+        if (exists) throw new ConflictException("Já existe um setor com este nome nesta empresa.");
+    }
+
     private UUID activateTenant(Jwt jwt) {
-        if (jwt == null || !"ACCESS".equals(jwt.getClaimAsString("token_type"))) {
-            throw new AccessDeniedException("É necessário um token de acesso válido.");
-        }
+        if (jwt == null || !"ACCESS".equals(jwt.getClaimAsString("token_type"))) throw new AccessDeniedException("É necessário um token de acesso válido.");
         UUID companyId = UUID.fromString(jwt.getClaimAsString("tenant_id"));
         UUID userId = UUID.fromString(jwt.getSubject());
         tenantSessionContext.activate(companyId, userId);
         return companyId;
     }
 
-    private String normalizeOptional(String value) {
-        return value == null || value.isBlank() ? null : value.trim();
-    }
+    private String normalizeOptional(String value) { return value == null || value.isBlank() ? null : value.trim(); }
 }
