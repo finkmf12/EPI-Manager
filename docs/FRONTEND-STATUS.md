@@ -38,7 +38,7 @@
 
 - Workflow `.github/workflows/frontend-ci.yml` executa instalação de dependências, verificação TypeScript e build de produção.
 - Catálogo de EPIs, integração de rota e estilos responsivos passaram no GitHub Actions em 24/11/2026.
-- A nova tela de Colaboradores e a integração de rota passaram no type-check e build de produção em 24/11/2026; validação de estilos ainda está em andamento.
+- A nova tela de Colaboradores, sua integração de rota, os estilos responsivos e a classificação visual do status AFASTADO passaram no GitHub Actions em 24/11/2026.
 - A aprovação do build confirma compilação e tipagem; não substitui testes E2E, homologação visual ou validação de fluxos com usuários reais.
 
 ## Próximas melhorias
