@@ -2,9 +2,9 @@
 
 Este roteiro organiza uma apresentação acadêmica de ponta a ponta. Use uma base de homologação isolada e dados fictícios. Não cadastre dados pessoais reais durante a apresentação.
 
-## 1. Problema que o sistema resolve
+## 1. Apresentação do problema
 
-O sistema centraliza o controle de EPIs por empresa, setor e colaborador. O objetivo é reduzir controles manuais, melhorar a rastreabilidade do estoque e manter o histórico de entregas e devoluções.
+Explique que o sistema centraliza o controle de EPIs por empresa, setor e colaborador. O objetivo é reduzir controles manuais, melhorar a rastreabilidade do estoque e manter o histórico de entregas e devoluções.
 
 ## 2. Sequência sugerida
 
@@ -32,19 +32,19 @@ O sistema centraliza o controle de EPIs por empresa, setor e colaborador. O obje
 
 ## 4. Perguntas que a banca pode fazer
 
-**Por que separar front-end e back-end?**  
+**Por que separar front-end e back-end?**
 Para separar apresentação das regras de negócio, centralizar a validação e permitir que diferentes clientes consumam a mesma API.
 
-**Por que usar banco relacional?**  
+**Por que usar banco relacional?**
 Porque há relacionamentos claros entre empresas, colaboradores, EPIs, lotes, entregas e movimentações, além da necessidade de integridade referencial e transações.
 
-**Como evitar que uma empresa veja os dados de outra?**  
+**Como evitar que uma empresa veja os dados de outra?**
 A API valida o vínculo do usuário com a empresa e define o contexto da transação. O PostgreSQL aplica políticas RLS para restringir as linhas acessíveis.
 
-**Por que registrar movimentações em vez de apenas alterar o saldo?**  
+**Por que registrar movimentações em vez de apenas alterar o saldo?**
 O histórico permite rastrear entradas, entregas e devoluções, explicar como o saldo foi formado e apoiar auditorias.
 
-**O que acontece quando uma entrega é confirmada?**  
+**O que acontece quando uma entrega é confirmada?**
 A confirmação executa as regras transacionais no back-end/banco, valida a disponibilidade e registra a baixa de estoque junto com a movimentação.
 
 ## 5. Limites a declarar com transparência

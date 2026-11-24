@@ -1,0 +1,80 @@
+spring:
+  application:
+    name: epi-manager-api
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      pool-name: epi-manager-pool
+      maximum-pool-size: ${DB_POOL_MAX:10}
+      minimum-idle: ${DB_POOL_MIN:2}
+      connection-timeout: 30000
+      validation-timeout: 5000
+      max-lifetime: 1500000
+      connection-init-sql: SET ROLE epi_manager_runtime
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        default_schema: epi_manager
+  flyway:
+    # Supabase migration history is authoritative for this database.
+    # Do not let the API process perform DDL with its restricted runtime role.
+    enabled: false
+  sql:
+    init:
+      mode: never
+
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+  request:
+    header:
+      forwarded:
+        strategy: framework
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+  info:
+    env:
+      enabled: false
+
+app:
+  security:
+    jwt:
+      issuer: ${JWT_ISSUER:epi-manager-api}
+      secret-base64: ${JWT_SECRET_BASE64}
+      access-ttl: ${JWT_ACCESS_TTL:PT15M}
+      selection-ttl: ${JWT_SELECTION_TTL:PT3M}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+  docs:
+    public: ${API_DOCS_PUBLIC:false}
+  registration:
+    enabled: ${REGISTRATION_ENABLED:false}
+
+logging:
+  level:
+    root: INFO
+    com.visage.epimanager: INFO
+    org.springframework.security: WARN
