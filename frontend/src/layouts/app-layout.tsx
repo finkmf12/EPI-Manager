@@ -6,6 +6,7 @@ import {
   ArrowLeftRight,
   Box,
   Building2,
+  Bell,
   ChevronDown,
   ClipboardCheck,
   LayoutDashboard,
@@ -34,6 +35,7 @@ const navigation = [
   { label: 'Devoluções', to: '/app/returns', icon: RotateCcw },
   { label: 'Fornecedores', to: '/app/suppliers', icon: ArrowLeftRight },
   { label: 'Relatórios', to: '/app/reports', icon: FileBarChart },
+  { label: 'Notificações', to: '/app/notifications', icon: Bell },
   { label: 'Auditoria', to: '/app/audit', icon: History, adminOnly: true },
 ]
 
@@ -48,6 +50,7 @@ const pageTitles: Record<string, string> = {
   '/app/returns': 'Devoluções',
   '/app/suppliers': 'Fornecedores',
   '/app/reports': 'Relatórios',
+  '/app/notifications': 'Notificações',
   '/app/audit': 'Auditoria',
   '/app/settings': 'Configurações',
 }
@@ -112,6 +115,7 @@ export function AppLayout() {
             <div className="breadcrumb"><span>Aplicação</span><span className="breadcrumb-divider">/</span><strong>{title}</strong></div>
           </div>
           <div className="topbar-right">
+            <NavLink to="/app/notifications" className="icon-button notification-topbar-link" aria-label="Abrir notificações" title="Central de notificações"><Bell size={18} /></NavLink>
             <span className="api-status"><span className="api-status-dot" /> Sessão ativa</span>
             <div className="topbar-user">{initials(session?.user.name)}</div>
           </div>
