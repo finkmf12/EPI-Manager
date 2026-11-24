@@ -49,3 +49,7 @@
 - Testes automatizados de componentes e testes HTTP integrados.
 - Testes E2E dos fluxos críticos, incluindo autenticação multiempresa, recebimento, entrega e devolução.
 - Melhorias de acessibilidade e validação de formulários.
+
+## Gestão de categorias
+
+A tela `/app/categories` foi implementada com consulta autenticada à API, cadastro e edição de categorias, pesquisa por nome/descrição, filtro por situação, indicadores de ativos/inativos e EPIs classificados, contagem de EPIs vinculados e inativação/reativação conforme perfil. A tela preserva o histórico e não utiliza dados fictícios. A validação de compilação e tipos está em execução no CI após a integração da rota.
