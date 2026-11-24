@@ -15,7 +15,8 @@
 - **Dashboard:** indicadores e gráficos alimentados por consultas reais de colaboradores, EPIs, estoque, entregas, devoluções e auditoria.
 - **Colaboradores:** cadastro, edição, pesquisa por dados pessoais/profissionais, filtros por situação, vínculo com setor e indicadores de ativos, afastados e inativos. ADMIN pode alterar a situação para ativo, afastado ou inativo; ALMOXARIFE pode cadastrar e editar.
 - **Setores:** cadastro, edição, pesquisa, filtros por situação, contagem de colaboradores vinculados e inativação/reativação com preservação do histórico. ADMIN e ALMOXARIFE podem cadastrar/editar; somente ADMIN altera a situação. A API valida nomes duplicados dentro da empresa.
-- **Categorias e fornecedores:** telas de consulta conectadas à API.
+- **Fornecedores:** cadastro e edição de dados comerciais, validação de CNPJ (incluindo formato alfanumérico), pesquisa, filtros por situação e inativação/reativação com preservação dos lotes e recebimentos históricos. ADMIN e ALMOXARIFE cadastram/editam; somente ADMIN altera a situação.
+- **Categorias:** tela de consulta conectada à API.
 - **Catálogo de EPIs:** cadastro, edição, pesquisa, filtros por situação e inativação preservando o histórico. Exibe validade do CA e classifica os registros como regular, em atenção ou vencido.
 - **Estoque:** consulta de saldos, lotes e movimentações; registro de recebimento com criação de lote.
 - **Entregas:** criação de rascunho, seleção de colaborador/EPI/lote, confirmação e cancelamento de rascunhos; emissão de termo imprimível para entrega confirmada.
@@ -44,7 +45,7 @@
 
 ## Próximas melhorias
 
-- Formulários completos de manutenção para categorias e fornecedores.
+- Formulário completo de manutenção para categorias.
 - Testes automatizados de componentes e testes HTTP integrados.
 - Testes E2E dos fluxos críticos, incluindo autenticação multiempresa, recebimento, entrega e devolução.
 - Melhorias de acessibilidade e validação de formulários.
