@@ -1,50 +1,61 @@
-# EPI Manager — Sistema de Gerenciamento de EPIs
+# EPI Manager
 
-Sistema proposto para controlar o cadastro de equipamentos, estoque, entregas a funcionários, devoluções, histórico de movimentações e validade.
+Sistema web para gerenciamento de Equipamentos de Proteção Individual (EPIs), com arquitetura multiempresa.
 
-> **Status:** documentação inicial. Este repositório ainda não contém uma aplicação implementada.
+> **Status:** desenvolvimento ativo. O banco Supabase está provisionado e protegido. A API Java/Spring Boot e o frontend React estão em implementação; ainda não há publicação de produção.
 
-## Objetivo
-Centralizar informações de funcionários e EPIs, acompanhar o estoque e manter o histórico de entregas e devoluções, incluindo o acompanhamento da validade de uso.
+## Arquitetura
 
-## Escopo previsto
-- Cadastro, consulta, edição e inativação de funcionários.
-- Cadastro, consulta e inativação de tipos de EPI.
-- Entradas e consulta de estoque.
-- Registro e consulta de entregas.
-- Devoluções totais ou parciais.
-- Histórico por funcionário e itens atualmente em posse.
-- Consulta de EPIs vencidos ou próximos do vencimento.
+- **Frontend:** React, TypeScript, Vite, Tailwind CSS e shadcn/ui.
+- **Backend:** Java 21, Spring Boot, Spring Security, JWT, Spring Data JPA e Flyway.
+- **Banco:** PostgreSQL 17 gerenciado pelo Supabase.
+- **Hospedagem planejada:** frontend na Vercel; API Java em serviço compatível com contêineres.
 
-## Tecnologias previstas
-O documento-base recomenda **React** no frontend, **Java** no backend e armazenamento em **banco de dados relacional**. As versões, frameworks e infraestrutura ainda serão definidos.
+O navegador consome somente a API REST. Credenciais administrativas do Supabase e a senha JDBC nunca devem ser incluídas no frontend ou versionadas.
 
-## Documentação
-- [Requisitos funcionais e não funcionais](docs/requisitos.md)
-- [Regras de negócio RN01–RN14](docs/regras-de-negocio.md)
-- [Arquitetura proposta](docs/arquitetura.md)
-- [Diagramas UML](docs/diagramas-uml.md)
+## Módulos planejados
 
-## Regras essenciais
-- Matrícula de funcionário única.
-- Não entregar mais unidades do que o saldo disponível.
-- Não entregar para funcionário inativo ou com EPI inativo.
-- Devolução não pode exceder a quantidade ainda em posse.
-- Somente itens devolvidos como aptos retornam ao estoque.
-- Movimentações confirmadas devem manter seu histórico.
+- Autenticação, usuários e seleção de empresa
+- Empresas e setores
+- Colaboradores
+- Categorias, catálogo de EPIs e fornecedores
+- Estoque por lote e movimentações
+- Entregas, devoluções e histórico
+- Alertas, relatórios e auditoria
 
-## Fora do escopo inicial
-Compras automatizadas, integração com fornecedores, folha de pagamento, assinatura digital, integração com sistemas governamentais e múltiplos níveis de acesso.
+## Estrutura do projeto
 
-## Fonte e atribuição
-Organizado com base no documento **“Documento de Requisitos — Sistema de Gestão de EPI”**, utilizado na Avaliação Prática 2: Modelagem de Sistemas. O documento identifica a **Premiersoft** como fonte e informa classificação pública, permitindo compartilhamento e divulgação desde que mantidas a integridade e a fonte original. Esta documentação não substitui o material original.
+```text
+backend/     API Java / Spring Boot
+frontend/    Aplicação React / Vite
+database/    Migrações e verificações PostgreSQL
+docs/        Arquitetura, segurança e contratos
+.github/     CI
+```
+
+## Segurança e regras de negócio
+
+- Isolamento multiempresa com Row Level Security (RLS).
+- Papel JDBC da aplicação separado de credenciais administrativas.
+- Estoque, entregas e devoluções executados em transações.
+- Ledger de movimentações e auditoria protegidos contra exclusão pelo papel de runtime.
+- Segredos fornecidos exclusivamente por variáveis de ambiente.
+- Dados pessoais devem ter acesso restrito e tratamento compatível com a LGPD.
+
+## Estado da validação
+
+Os testes transacionais de estoque, entrega e devolução foram executados no PostgreSQL em transações revertidas. A compilação integral Java/React e os deploys ainda precisam ser concluídos em ambiente com acesso às dependências.
+
+## Documentação original
+
+O escopo acadêmico inicial foi elaborado com base no documento “Documento de Requisitos — Sistema de Gestão de EPI”, utilizado na Avaliação Prática 2: Modelagem de Sistemas. A implementação atual amplia esse escopo com autenticação, multiempresa, trilha de auditoria e controles de segurança.
 
 ## Próximas etapas
-- [ ] Validar requisitos.
-- [ ] Modelar o banco de dados.
-- [ ] Definir versões e frameworks.
-- [ ] Implementar backend e frontend.
-- [ ] Criar testes para as regras de negócio.
-- [ ] Validar os fluxos de entrega, devolução e validade.
+
+- [ ] Versionar a aplicação completa neste repositório.
+- [ ] Executar build e testes automatizados em CI.
+- [ ] Configurar as variáveis de ambiente de produção.
+- [ ] Publicar API e frontend em ambientes separados.
+- [ ] Executar homologação ponta a ponta.
 
 **Licença:** ainda não definida.
