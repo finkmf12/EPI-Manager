@@ -13,6 +13,7 @@ import { ReportsPage } from '@/features/reports/reports-page'
 import { AuditPage } from '@/features/audit/audit-page'
 import { NotificationsPage } from '@/features/notifications/notifications-page'
 import { EpisPage } from '@/features/resources/epis-page'
+import { CollaboratorsPage } from '@/features/resources/collaborators-page'
 
 function ProtectedLayout() {
   const { session } = useAuth()
@@ -33,7 +34,7 @@ export function App() {
       <Route path="/register" element={session ? <Navigate to="/app" replace /> : <RegisterPage />} />
       <Route path="/app" element={<ProtectedLayout />}>
         <Route index element={<DashboardPage />} />
-        <Route path="collaborators" element={<ResourcePage resourceKey="collaborators" />} />
+        <Route path="collaborators" element={<CollaboratorsPage />} />
         <Route path="sectors" element={<ResourcePage resourceKey="sectors" />} />
         <Route path="epis" element={<EpisPage />} />
         <Route path="categories" element={<ResourcePage resourceKey="categories" />} />
