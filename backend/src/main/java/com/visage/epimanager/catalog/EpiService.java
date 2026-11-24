@@ -50,7 +50,7 @@ public class EpiService {
     public EpiResponse create(Jwt jwt, EpiRequest request) {
         UUID companyId = activateTenant(jwt);
         validateCategory(companyId, request.categoriaId());
-        EpiEntity saved = repository.save(new EpiEntity(companyId, request));
+        EpiEntity saved = repository.saveAndFlush(new EpiEntity(companyId, request));
         return EpiResponse.from(saved);
     }
 
