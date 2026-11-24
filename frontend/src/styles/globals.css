@@ -657,3 +657,9 @@ a { color: inherit; text-decoration: none; }
   .collaborator-toolbar .data-toolbar__actions > * { width: 100%; }
   .collaborator-row-actions { align-items: flex-start; flex-direction: column; }
 }
+
+/* Gestão de setores */
+.sector-description { color: #718092; font-size: 10px; line-height: 1.5; }
+@media (max-width: 760px) {
+  .sector-description { min-width: 180px; }
+}
