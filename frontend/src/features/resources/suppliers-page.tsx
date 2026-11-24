@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { AlertTriangle, CheckCircle2, Edit3, Plus, RefreshCw, Search, ShieldCheck, Truck, X } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Edit3, Plus, RefreshCw, Search, Truck, X } from 'lucide-react'
 import { apiRequest } from '@/api/client'
 import type { Supplier } from '@/api/types'
 import { useAuth } from '@/app/auth-context'
