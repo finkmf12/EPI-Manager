@@ -1,32 +1,40 @@
 # EPI Manager
 
-Sistema web multiempresa para gestão de Equipamentos de Proteção Individual (EPIs), com cadastro de colaboradores, setores, catálogo, fornecedores, estoque por lote, entregas e devoluções.
+Sistema web multiempresa para gestão de Equipamentos de Proteção Individual (EPIs). Centraliza cadastros, estoque por lote, entregas, devoluções, notificações, auditoria e relatórios operacionais.
 
-## Arquitetura
+## Aplicação publicada
 
-```text
-frontend/       React + TypeScript + Vite + Tailwind CSS v4
-backend/        Java 21 + Spring Boot REST API
- database/      Migrações SQL e verificações do PostgreSQL/Supabase
- docs/           Arquitetura, segurança, API, testes e entrega
-.github/        CI do front-end e back-end
-```
+- **Front-end:** [https://epimanager.vercel.app](https://epimanager.vercel.app)
+- **API:** [https://epimanager-academy-cda9.vercel.app](https://epimanager-academy-cda9.vercel.app)
+- **Repositório:** [finkmf12/EPI-Manager](https://github.com/finkmf12/EPI-Manager)
 
-- **Front-end:** React 19, TypeScript, Vite 8, Tailwind CSS v4 e React Router.
-- **Back-end:** Java 21, Spring Boot 4.2, Spring Security, JWT, Spring Data JPA/JDBC.
-- **Banco:** PostgreSQL 17 no Supabase, schema privado `epi_manager`, RLS e isolamento por empresa.
-- **Hospedagem prevista:** Vercel para o front-end; serviço Java em host compatível com contêiner.
+Os endereços acima identificam as implantações configuradas. A disponibilidade de cada fluxo deve ser confirmada por testes de homologação; status de deploy READY, isoladamente, não comprova que todas as operações funcionam.
 
-## Funcionalidades implementadas no código
+## Arquitetura e tecnologias
+
+| Camada | Tecnologias |
+| --- | --- |
+| Front-end | React 19, TypeScript, Vite 8, Tailwind CSS v4 e React Router |
+| Back-end | Java 21, Spring Boot 4.2, Spring Security, JWT e Spring Data |
+| Banco de dados | PostgreSQL no Supabase, schema privado `epi_manager` |
+| Hospedagem | Vercel para interface e API |
+| Qualidade | GitHub Actions para verificações de front-end e back-end |
+
+O navegador comunica-se com a API Spring Boot. As regras de negócio e a autorização ficam no servidor; o PostgreSQL mantém a integridade e o isolamento dos dados por empresa.
+
+## Funcionalidades disponíveis no projeto
 
 - Autenticação e seleção de empresa.
-- Dashboard operacional.
+- Dashboard com indicadores operacionais.
 - Cadastros de colaboradores, setores, categorias, EPIs e fornecedores.
-- Recebimento de estoque por lote e consulta de saldos/movimentações.
-- Entregas e devoluções com rascunho, confirmação e cancelamento.
-- API REST documentada com OpenAPI/Swagger.
+- Recebimento de estoque por lote, consulta de saldos e histórico de movimentações.
+- Fluxos de entrega e devolução, incluindo rascunho, confirmação e cancelamento.
+- Comprovante/termo imprimível de entrega.
+- Notificações operacionais e trilha de auditoria.
+- Relatórios com filtros e exportação CSV, além de impressão pelo navegador.
+- Interface responsiva e estrutura de instalação PWA.
 
-Consulte `docs/DELIVERY-STATUS.md` para distinguir o que está implementado, o que foi validado e o que ainda bloqueia a produção. A presença de uma funcionalidade no código não significa que ela já foi homologada em ambiente publicado.
+Consulte a documentação de status e os resultados de testes antes de considerar qualquer fluxo homologado em produção.
 
 ## Executar localmente
 
@@ -40,7 +48,7 @@ npm run build
 npm run dev
 ```
 
-Configure `VITE_API_URL` no `.env.local` com a URL da API. O navegador comunica-se somente com o back-end; não use credenciais administrativas do Supabase no front-end.
+Configure `VITE_API_BASE_URL` no arquivo `.env.local` com a URL da API. Para desenvolvimento local, o valor padrão do exemplo é `http://localhost:8080`.
 
 ### Back-end
 
@@ -50,30 +58,28 @@ cp .env.example .env
 mvn --batch-mode verify
 ```
 
-Preencha as variáveis de ambiente no arquivo local, sem versioná-lo. A aplicação precisa da conexão JDBC dedicada `epi_manager_app` e da chave JWT mantida em um cofre de segredos.
+Preencha as variáveis de ambiente no arquivo local, sem versioná-lo. A aplicação precisa da conexão JDBC dedicada `epi_manager_app` e de uma chave JWT mantida em variável segura.
 
 ## Segurança
 
-O back-end usa o papel dedicado `epi_manager_app`, sem `SUPERUSER` ou `BYPASSRLS`, e define o contexto da empresa dentro da transação após validar o vínculo do usuário. Não colocar `.env`, senhas, chaves JWT, tokens ou dados reais de colaboradores no Git.
+- O banco usa o schema privado `epi_manager`, com Row-Level Security (RLS) e políticas de isolamento por empresa.
+- A API valida o vínculo do usuário com a empresa e define o contexto do tenant dentro da transação.
+- O papel de conexão da aplicação não deve possuir privilégios de superusuário nem bypass de RLS.
+- Não coloque arquivos `.env`, senhas, chaves JWT, tokens ou dados reais de colaboradores no Git.
+- O front-end não deve receber credenciais administrativas do Supabase.
 
-## GitHub e implantação
+## Documentação
 
-Repositório: [finkmf12/EPI-Manager](https://github.com/finkmf12/EPI-Manager).
+- [Arquitetura](docs/ARCHITECTURE.md)
+- [Implantação](docs/DEPLOYMENT.md)
+- [Regras de negócio (RN01–RN14)](docs/REGRAS-DE-NEGOCIO.md)
+- [Auditoria](docs/AUDITORIA.md)
+- [Contrato da API](docs/API-CONTRACT.md)
+- [Roteiro de demonstração](docs/DEMO-ROTEIRO.md)
+- [Status da entrega](docs/DELIVERY-STATUS.md)
+- [Resultados de testes](docs/TEST-RESULTS.md)
+- [Revisão de segurança](docs/SECURITY-REVIEW.md)
 
-O projeto Vercel `epi-manager-web` foi criado e configurado para Vite, com diretório raiz `frontend` e saída `dist`; ainda não há deploy homologado. O código-fonte completo precisa ser enviado ao repositório remoto antes de conectar o deploy automático.
+## Importante
 
-
-## Documentação do projeto
-
-- [Regras de Negócio (RN01–RN14)](docs/REGRAS-DE-NEGOCIO.md) — restrições e condições que o sistema deve respeitar.
-- [Auditoria do sistema](docs/AUDITORIA.md) — eventos registrados, segurança, permissões e limitações da trilha de auditoria.
-
-## Estado da entrega
-
-Leia, nesta ordem:
-1. `docs/DELIVERY-STATUS.md`
-2. `docs/TEST-RESULTS.md`
-3. `docs/SECURITY-REVIEW.md`
-4. `docs/DEPLOYMENT.md`
-
-**Não usar em produção** até concluir os testes de build, integração HTTP, segurança, configuração dos segredos e homologação dos fluxos completos.
+O projeto está em evolução. Antes de uma utilização real, valide os fluxos completos, os controles de acesso, a configuração dos segredos, a recuperação de falhas e os procedimentos de backup. Não use dados pessoais reais em demonstrações acadêmicas.
