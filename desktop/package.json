@@ -40,6 +40,7 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "EPI Manager"
-    }
+    },
+    "artifactName": "EPI-Manager-Setup-${version}.${ext}"
   }
 }
