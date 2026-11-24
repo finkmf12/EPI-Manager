@@ -1,36 +1,82 @@
 # Arquitetura — EPI Manager
 
-## Estado atual
+## Visão geral
 
-- Banco PostgreSQL Supabase em `sa-east-1`.
-- Domínio de negócio no schema não exposto `epi_manager`.
-- 17 tabelas com RLS forçado e políticas por empresa.
-- 28 triggers de integridade, 34 políticas RLS e 17 funções internas no schema `epi_manager`.
-- Spring Boot 4.2.0 / Java 21: API inicial de autenticação, contexto multiempresa, setores e colaboradores.
-- Vercel: projeto `epi-manager-web` reservado para o front-end Vite; ainda sem código publicado.
+O EPI Manager utiliza arquitetura em camadas, com interface web, API REST e banco de dados relacional.
 
-## Limites de confiança
+```text
+Navegador / PWA
+      |
+      | HTTPS + JSON
+      v
+Front-end React + TypeScript
+      |
+      | API REST + JWT
+      v
+Back-end Java 21 / Spring Boot
+      |
+      | JDBC + transações
+      v
+PostgreSQL (Supabase)
+  schema epi_manager
+  RLS + integridade referencial
+```
 
-1. React fala exclusivamente com a API Spring Boot.
-2. O Spring Boot valida a senha, emite e valida JWT e aplica autorização.
-3. A conexão da API usa `epi_manager_app`, que executa `SET ROLE epi_manager_runtime` em cada conexão criada pelo pool.
-4. `epi_manager_runtime` não tem `BYPASSRLS`, não pode criar objetos e não pode apagar ou alterar o ledger histórico.
-5. A API define `app.empresa_id` e `app.usuario_id` via `set_config(..., true)` dentro de transações para que RLS aplique o escopo do tenant.
-6. O front-end nunca recebe senha do banco, `service_role`, chave JWT de assinatura ou credenciais administrativas.
+## Responsabilidades por camada
 
-## Fluxo de autenticação
+### Front-end
 
-- Login consulta função restrita `fn_autenticar_usuario`, compara BCrypt no servidor e retorna um token transitório `COMPANY_SELECTION` sem tenant.
-- A seleção da empresa chama `fn_perfil_usuario_empresa`; somente um vínculo ativo permite emitir o `ACCESS` com `tenant_id` e perfil.
-- O filtro de autorização aceita tokens `ACCESS` nas rotas protegidas e limita o token transitório à rota de seleção.
-- Access tokens duram 15 minutos; tokens de seleção duram 3 minutos. Não há refresh token nesta etapa.
+- Apresentar telas, formulários, tabelas, filtros e indicadores.
+- Manter o estado de navegação e a sessão do usuário.
+- Consumir exclusivamente a API Spring Boot para operações de negócio.
+- Exibir validações e mensagens retornadas pela API.
+- Oferecer interface responsiva e recursos de instalação PWA.
 
-## Próximos módulos
+### Back-end
 
-1. Cadastro de empresa e primeiro administrador com transação de onboarding.
-2. Gestão de usuários, setores e colaboradores.
-3. Catálogo EPI, categorias e fornecedores.
-4. Estoque por lote, entradas e ajustes.
-5. Entregas e devoluções, integradas aos triggers e ledger.
-6. Relatórios, notificações, PDF e auditoria.
-7. Front-end React com sessão segura.
+- Autenticar usuários e emitir/validar tokens JWT.
+- Validar vínculo do usuário com a empresa selecionada.
+- Aplicar autorização por perfil.
+- Validar regras de negócio e executar operações transacionais.
+- Expor endpoints REST e documentação OpenAPI.
+
+### Banco de dados
+
+- Persistir empresas, usuários, colaboradores, EPIs, lotes e movimentações.
+- Aplicar integridade referencial, constraints e triggers.
+- Isolar registros por empresa com Row-Level Security (RLS).
+- Preservar o histórico de movimentações e auditoria.
+
+## Isolamento multiempresa
+
+1. O usuário informa suas credenciais; a API valida a conta no servidor.
+2. O usuário seleciona uma empresa à qual possui vínculo.
+3. A API confirma que o vínculo está ativo e emite o token de acesso associado à empresa e ao perfil.
+4. Nas operações protegidas, a API define o contexto de usuário e empresa dentro da transação.
+5. O PostgreSQL aplica as políticas RLS para limitar os registros acessíveis.
+
+A interface não é uma fronteira de segurança. Toda autorização deve ser validada novamente no servidor e reforçada pelo banco.
+
+## Autenticação e sessão
+
+O fluxo de autenticação utiliza JWT. O token transitório de seleção de empresa é distinto do token de acesso às rotas protegidas. Os tempos de expiração e as permissões devem ser conferidos na configuração vigente do back-end.
+
+Recursos como recuperação de senha, refresh token rotativo e revogação imediata não devem ser considerados disponíveis sem implementação e testes específicos.
+
+## Módulos funcionais
+
+- Autenticação e seleção de empresa.
+- Dashboard e notificações operacionais.
+- Colaboradores e setores.
+- Categorias, catálogo de EPIs e fornecedores.
+- Estoque por lote, recebimentos e movimentações.
+- Entregas, devoluções e comprovante imprimível.
+- Relatórios e auditoria.
+
+## Implantação
+
+- Front-end e back-end publicados em projetos Vercel separados.
+- PostgreSQL hospedado no Supabase.
+- Integração contínua por GitHub Actions.
+
+Consulte [DEPLOYMENT.md](DEPLOYMENT.md) para os endereços e variáveis de ambiente. A implantação READY não equivale à homologação funcional ou autorização para uso em produção.
