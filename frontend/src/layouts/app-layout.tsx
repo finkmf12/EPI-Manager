@@ -76,7 +76,7 @@ export function AppLayout() {
 
         <div className="sidebar-section-label">MENU PRINCIPAL</div>
         <nav className="sidebar-nav" aria-label="Navegação principal">
-          {navigation.filter((item) => !item.adminOnly || session?.companyProfile === 'ADMIN').map((item) => {
+          {navigation.filter((item) => !('adminOnly' in item) || !item.adminOnly || session?.companyProfile === 'ADMIN').map((item) => {
             const Icon = item.icon
             return (
               <NavLink
