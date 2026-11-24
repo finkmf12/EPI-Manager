@@ -1,5 +1,6 @@
 package com.visage.epimanager.stock;
 
+import com.visage.epimanager.audit.AuditLogService;
 import com.visage.epimanager.common.PostgresBusinessRuleTranslator;
 import com.visage.epimanager.common.ResourceNotFoundException;
 import com.visage.epimanager.security.TenantSessionContext;
@@ -13,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,10 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class StockService {
     private final JdbcTemplate jdbcTemplate;
     private final TenantSessionContext tenantSessionContext;
+    private final AuditLogService auditLogService;
 
-    public StockService(JdbcTemplate jdbcTemplate, TenantSessionContext tenantSessionContext) {
+    public StockService(JdbcTemplate jdbcTemplate, TenantSessionContext tenantSessionContext, AuditLogService auditLogService) {
         this.jdbcTemplate = jdbcTemplate;
         this.tenantSessionContext = tenantSessionContext;
+        this.auditLogService = auditLogService;
     }
 
     @Transactional
@@ -78,6 +82,13 @@ public class StockService {
         } catch (DataAccessException exception) {
             throw PostgresBusinessRuleTranslator.translate(exception);
         }
+
+        auditLogService.record(
+                tenant.companyId(), tenant.userId(), "ENTRADA_ESTOQUE", "LOTE_ESTOQUE", lotId,
+                null,
+                Map.of("epiId", request.epiId(), "codigoLote", request.codigoLote().trim(),
+                        "quantidade", request.quantidade(), "fornecedorId",
+                        request.fornecedorId() == null ? "" : request.fornecedorId().toString()));
 
         return jdbcTemplate.queryForObject(
                 """
