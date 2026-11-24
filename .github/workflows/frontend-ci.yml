@@ -7,7 +7,6 @@ on:
   pull_request:
     paths:
       - "frontend/**"
-      - ".github/workflows/frontend-ci.yml"
 
 permissions:
   contents: read
