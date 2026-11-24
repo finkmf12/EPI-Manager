@@ -399,3 +399,25 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 820px) {
   .dashboard-actions { justify-content: flex-start; }
 }
+
+
+/* Reports */
+.reports-filter-grid { display: grid; grid-template-columns: minmax(220px, 1.5fr) repeat(2, minmax(160px, 1fr)); gap: 16px; }
+.reports-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.reports-footnote { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 16px; margin-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+.report-period { color: var(--muted); font-size: 12px; }
+@media (max-width: 720px) {
+  .reports-filter-grid { grid-template-columns: 1fr; }
+}
+@media print {
+  @page { size: landscape; margin: 12mm; }
+  body { background: #fff !important; color: #111 !important; }
+  .sidebar, .topbar, .app-footer, .reports-controls, .reports-page > .page-stack > .page-header, .reports-page .page-header, .reports-actions { display: none !important; }
+  .workspace, .main-content, .app-shell { display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+  .reports-page, .reports-result, .panel { box-shadow: none !important; border: 0 !important; padding: 0 !important; }
+  .reports-result { display: block !important; }
+  .mini-table-wrap { overflow: visible !important; }
+  .data-table { width: 100% !important; font-size: 10px !important; }
+  .data-table th, .data-table td { padding: 6px !important; color: #111 !important; }
+  .reports-footnote { color: #444 !important; }
+}
