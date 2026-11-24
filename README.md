@@ -66,6 +66,7 @@ O projeto Vercel `epi-manager-web` foi criado e configurado para Vite, com diret
 ## Documentação do projeto
 
 - [Regras de Negócio (RN01–RN14)](docs/REGRAS-DE-NEGOCIO.md) — restrições e condições que o sistema deve respeitar.
+- [Auditoria do sistema](docs/AUDITORIA.md) — eventos registrados, segurança, permissões e limitações da trilha de auditoria.
 
 ## Estado da entrega
 
