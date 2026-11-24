@@ -10,7 +10,7 @@ export function RegisterPage() {
   const [form, setForm] = useState<RegisterCompanyRequest>({
     razaoSocial: '',
     nomeFantasia: '',
-    cnpj: '',
+    cnpj: 'DEMO0000000000',
     emailContato: '',
     telefone: '',
     nomeAdministrador: '',
@@ -96,8 +96,9 @@ export function RegisterPage() {
                 <input id="nomeFantasia" value={form.nomeFantasia} onChange={(event) => update('nomeFantasia', event.target.value)} maxLength={180} />
               </div>
               <div className="form-field">
-                <label htmlFor="cnpj">CNPJ *</label>
+                <label htmlFor="cnpj">CNPJ ou identificador de demonstração *</label>
                 <input id="cnpj" value={form.cnpj} onChange={(event) => update('cnpj', event.target.value)} required maxLength={18} placeholder="00.000.000/0000-00" inputMode="text" />
+                <small>Para esta apresentação, usamos DEMO0000000000. É um identificador reservado e não representa um CNPJ real.</small>
               </div>
               <div className="form-field">
                 <label htmlFor="emailContato">E-mail da empresa</label>
