@@ -22,6 +22,28 @@ export interface SelectCompanyResponse {
   companyProfile: string
 }
 
+export interface RegisterCompanyRequest {
+  razaoSocial: string
+  nomeFantasia?: string
+  cnpj: string
+  emailContato?: string
+  telefone?: string
+  nomeAdministrador: string
+  emailAdministrador: string
+  senhaAdministrador: string
+}
+
+export interface RegisterCompanyResponse {
+  companyId: string
+  companyName: string
+  userId: string
+  userEmail: string
+  accessToken: string
+  tokenType: string
+  expiresInSeconds: number
+  companyProfile: string
+}
+
 export interface CurrentCompanyResponse {
   id: string
   legalName: string
