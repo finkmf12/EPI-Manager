@@ -10,4 +10,6 @@ public interface SetorRepository extends JpaRepository<SetorEntity, UUID> {
     List<SetorEntity> findAllByEmpresaIdAndAtivoTrueOrderByNome(UUID empresaId);
     Optional<SetorEntity> findByIdAndEmpresaId(UUID id, UUID empresaId);
     Optional<SetorEntity> findByIdAndEmpresaIdAndAtivoTrue(UUID id, UUID empresaId);
+    boolean existsByEmpresaIdAndNomeIgnoreCase(UUID empresaId, String nome);
+    boolean existsByEmpresaIdAndNomeIgnoreCaseAndIdNot(UUID empresaId, String nome, UUID id);
 }
