@@ -31,48 +31,38 @@ import org.springframework.web.bind.annotation.RestController;
 public class SetorController {
     private final SetorService service;
 
-    public SetorController(SetorService service) {
-        this.service = service;
-    }
+    public SetorController(SetorService service) { this.service = service; }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'ALMOXARIFE', 'CONSULTA')")
     @Operation(summary = "Listar setores da empresa atual")
-    public List<SetorResponse> list(
-            @AuthenticationPrincipal Jwt jwt,
-            @RequestParam(defaultValue = "false") boolean includeInactive) {
+    public List<SetorResponse> list(@AuthenticationPrincipal Jwt jwt, @RequestParam(defaultValue = "false") boolean includeInactive) {
         return service.list(jwt, includeInactive);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'ALMOXARIFE', 'CONSULTA')")
-    public SetorResponse findById(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id) {
-        return service.findById(jwt, id);
-    }
+    public SetorResponse findById(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id) { return service.findById(jwt, id); }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('ADMIN', 'ALMOXARIFE')")
     @Operation(summary = "Criar setor")
-    public SetorResponse create(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody CreateSetorRequest request) {
-        return service.create(jwt, request);
-    }
+    public SetorResponse create(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody CreateSetorRequest request) { return service.create(jwt, request); }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'ALMOXARIFE')")
     @Operation(summary = "Atualizar setor")
-    public SetorResponse update(
-            @AuthenticationPrincipal Jwt jwt,
-            @PathVariable UUID id,
-            @Valid @RequestBody UpdateSetorRequest request) {
-        return service.update(jwt, id, request);
-    }
+    public SetorResponse update(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id, @Valid @RequestBody UpdateSetorRequest request) { return service.update(jwt, id, request); }
 
     @PatchMapping("/{id}/deactivate")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Inativar setor sem excluir histórico")
-    public void deactivate(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id) {
-        service.deactivate(jwt, id);
-    }
+    public void deactivate(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id) { service.deactivate(jwt, id); }
+
+    @PatchMapping("/{id}/activate")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Reativar setor")
+    public SetorResponse activate(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id) { return service.activate(jwt, id); }
 }
