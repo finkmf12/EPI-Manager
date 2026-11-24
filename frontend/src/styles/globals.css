@@ -500,3 +500,46 @@ a { color: inherit; text-decoration: none; }
   .audit-search { max-width: none; }
   .audit-toolbar select { width: 100%; }
 }
+
+/* Dashboard operational insights */
+.dashboard-insight-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(280px, .8fr); gap: 16px; }
+.dashboard-chart-panel, .dashboard-summary-panel, .dashboard-alert-panel, .dashboard-audit-panel { padding: 19px; }
+.chart-legend { display: flex; gap: 17px; margin: 18px 0 4px; color: var(--muted); font-size: 11px; }
+.chart-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.legend-dot--entry { background: #0d9488; }
+.legend-dot--exit { background: #64748b; }
+.monthly-chart { height: 178px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); align-items: end; gap: 12px; padding: 12px 4px 0; border-bottom: 1px solid var(--line); }
+.monthly-chart__column { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: end; gap: 9px; color: var(--muted); font-size: 10px; text-transform: capitalize; }
+.monthly-chart__bars { width: 100%; height: calc(100% - 22px); display: flex; align-items: end; justify-content: center; gap: 5px; }
+.monthly-bar { width: min(24px, 34%); min-height: 0; border-radius: 5px 5px 0 0; transition: height .2s ease; }
+.monthly-bar--entry { background: #0d9488; }
+.monthly-bar--exit { background: #64748b; }
+.chart-footnote { margin-top: 12px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.operational-stat { display: flex; align-items: center; gap: 10px; padding: 13px 0; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+.operational-stat strong { margin-left: auto; color: var(--text); font-size: 17px; }
+.operational-stat__icon { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 9px; }
+.operational-stat__icon--blue { background: #eaf2ff; color: #3568b8; }
+.operational-stat__icon--green { background: #e8f7ef; color: #168451; }
+.operational-stat__icon--amber { background: #fff5df; color: #a66b08; }
+.dashboard-alert-list, .dashboard-audit-list { display: grid; }
+.dashboard-alert-item, .dashboard-audit-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); min-width: 0; }
+.dashboard-alert-item:last-child, .dashboard-audit-item:last-child { border-bottom: 0; }
+.dashboard-alert-item__icon { width: 32px; height: 32px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 9px; background: #fff4df; color: #a66b08; }
+.dashboard-alert-item > div:nth-child(2), .dashboard-audit-item > div:nth-child(2) { display: grid; gap: 4px; min-width: 0; }
+.dashboard-alert-item strong, .dashboard-audit-item strong { color: var(--text); font-size: 12px; }
+.dashboard-alert-item small, .dashboard-audit-item small { color: var(--muted); font-size: 10px; overflow-wrap: anywhere; }
+.dashboard-alert-item__tags { display: flex; flex-wrap: wrap; gap: 5px; margin-left: auto; justify-content: flex-end; }
+.alert-tag { padding: 4px 7px; border-radius: 5px; font-size: 9px; font-weight: 700; white-space: nowrap; }
+.alert-tag--warning { background: #fff4df; color: #966008; }
+.alert-tag--danger { background: #fff0ef; color: #b33c36; }
+.dashboard-audit-item__icon { width: 30px; height: 30px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 9px; background: var(--surface-muted, #f0f5f6); color: var(--accent, #0b8588); }
+.dashboard-audit-item time { margin-left: auto; color: var(--muted); font-size: 10px; white-space: nowrap; }
+@media (max-width: 900px) { .dashboard-insight-grid { grid-template-columns: 1fr; } }
+@media (max-width: 680px) {
+  .dashboard-alert-item { align-items: flex-start; flex-wrap: wrap; }
+  .dashboard-alert-item__tags { width: 100%; margin-left: 44px; justify-content: flex-start; }
+  .dashboard-audit-item { align-items: flex-start; flex-wrap: wrap; }
+  .dashboard-audit-item time { width: 100%; margin-left: 42px; }
+  .monthly-chart { gap: 6px; }
+}
