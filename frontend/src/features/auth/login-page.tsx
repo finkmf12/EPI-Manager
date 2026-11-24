@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { ArrowLeft, ArrowRight, Building2, CheckCircle2, LockKeyhole, ShieldCheck } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '@/app/auth-context'
 import { ApiError } from '@/api/client'
 import type { CompanyMembership } from '@/api/types'
@@ -76,7 +77,7 @@ export function LoginPage() {
                 </button>
               </form>
               <div className="login-help"><ShieldCheck size={16} /><span>Conexão protegida e autenticação segura.</span></div>
-              <p className="registration-note">Precisa de acesso? Solicite a criação da conta ao administrador da sua empresa.</p>
+              <p className="registration-note">Sua empresa ainda não tem acesso? <Link className="text-link" to="/register">Cadastrar empresa</Link></p>
             </>
           ) : (
             <>
