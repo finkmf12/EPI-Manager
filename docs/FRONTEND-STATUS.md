@@ -13,7 +13,8 @@
 
 - **Autenticação:** login, seleção de empresa e cadastro inicial conforme contratos disponíveis na API.
 - **Dashboard:** indicadores e gráficos alimentados por consultas reais de colaboradores, EPIs, estoque, entregas, devoluções e auditoria.
-- **Colaboradores, setores, categorias e fornecedores:** telas de consulta conectadas à API.
+- **Colaboradores:** cadastro, edição, pesquisa por dados pessoais/profissionais, filtros por situação, vínculo com setor e indicadores de ativos, afastados e inativos. ADMIN pode alterar a situação para ativo, afastado ou inativo; ALMOXARIFE pode cadastrar e editar.
+- **Setores, categorias e fornecedores:** telas de consulta conectadas à API.
 - **Catálogo de EPIs:** cadastro, edição, pesquisa, filtros por situação e inativação preservando o histórico. Exibe validade do CA e classifica os registros como regular, em atenção ou vencido.
 - **Estoque:** consulta de saldos, lotes e movimentações; registro de recebimento com criação de lote.
 - **Entregas:** criação de rascunho, seleção de colaborador/EPI/lote, confirmação e cancelamento de rascunhos; emissão de termo imprimível para entrega confirmada.
@@ -30,16 +31,19 @@
 - A interface não apresenta registros fictícios quando a API não retorna dados.
 - Inativação é utilizada em vez de exclusão física nos cadastros com histórico.
 - Alertas são informativos e não alteram estoque ou registros automaticamente.
+- Matrícula duplicada é verificada na tela antes do envio; a API e a restrição de banco continuam sendo a autoridade final para integridade concorrente.
+- Afastados e inativos não são carregados como elegíveis para novas entregas.
 
 ## Validação automatizada
 
 - Workflow `.github/workflows/frontend-ci.yml` executa instalação de dependências, verificação TypeScript e build de produção.
-- A implementação do Catálogo de EPIs e os estilos responsivos passaram no GitHub Actions em 24/11/2026.
+- Catálogo de EPIs, integração de rota e estilos responsivos passaram no GitHub Actions em 24/11/2026.
+- A nova tela de Colaboradores e a integração de rota passaram no type-check e build de produção em 24/11/2026; validação de estilos ainda está em andamento.
 - A aprovação do build confirma compilação e tipagem; não substitui testes E2E, homologação visual ou validação de fluxos com usuários reais.
 
 ## Próximas melhorias
 
-- Formulários completos de manutenção para colaboradores, setores, categorias e fornecedores.
+- Formulários completos de manutenção para setores, categorias e fornecedores.
 - Testes automatizados de componentes e testes HTTP integrados.
 - Testes E2E dos fluxos críticos, incluindo autenticação multiempresa, recebimento, entrega e devolução.
 - Melhorias de acessibilidade e validação de formulários.
