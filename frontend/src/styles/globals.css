@@ -586,3 +586,38 @@ a { color: inherit; text-decoration: none; }
   .notification-summary-card { flex-wrap: wrap; }
   .notification-summary-card span { width: 100%; }
 }
+
+
+/* EPI catalog management */
+.epi-kpi-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
+.epi-kpi { min-width: 0; display: grid; gap: 7px; padding: 17px 19px; border: 1px solid #e7edf2; border-radius: 11px; background: #fff; }
+.epi-kpi > span { color: #78899a; font-size: 10px; font-weight: 700; }
+.epi-kpi > strong { color: #203449; font-size: 25px; letter-spacing: -.8px; }
+.epi-kpi > small { color: #9aa6b2; font-size: 9px; }
+.epi-kpi--danger > strong { color: #b84444; }
+.epi-kpi--warning > strong { color: #a96c1b; }
+.epi-form-panel { padding: 21px; }
+.epi-form-hint { display: flex; align-items: center; gap: 9px; margin-top: 17px; padding: 11px 13px; border: 1px solid #dcefed; border-radius: 8px; color: #347c7b; background: #f3fbfa; font-size: 10px; line-height: 1.5; }
+.form-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 20px; padding-top: 17px; border-top: 1px solid #edf1f4; }
+.epi-name-cell { display: grid; gap: 4px; min-width: 150px; }
+.epi-name-cell strong { color: #26394d; font-size: 11px; font-weight: 750; }
+.epi-name-cell small { color: #91a0ae; font-size: 9px; }
+.epi-ca-status { display: inline-flex; align-items: center; width: fit-content; padding: 5px 8px; border-radius: 6px; font-size: 9px; font-weight: 750; white-space: nowrap; }
+.epi-ca-status--success { color: #247b69; background: #eaf7f2; }
+.epi-ca-status--warning { color: #98651f; background: #fff5e5; }
+.epi-ca-status--danger { color: #a83e3e; background: #fff0f0; }
+.epi-ca-status--neutral { color: #718092; background: #f0f3f6; }
+.epi-row-actions { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.epi-row-actions .secondary-button { padding: 7px 9px; font-size: 9px; }
+.epi-deactivate { padding: 5px; border: 0; background: transparent; color: #a84b4b; font-size: 9px; cursor: pointer; }
+.epi-deactivate:hover { text-decoration: underline; }
+@media (max-width: 900px) {
+  .epi-kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .epi-kpi-grid { grid-template-columns: 1fr; }
+  .epi-form-panel { padding: 15px; }
+  .form-actions { flex-direction: column-reverse; }
+  .form-actions button { width: 100%; }
+  .epi-row-actions { align-items: flex-start; flex-direction: column; }
+}
