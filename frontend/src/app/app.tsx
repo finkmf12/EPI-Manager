@@ -12,6 +12,7 @@ import { ReturnsPage } from '@/features/resources/returns-page'
 import { ReportsPage } from '@/features/reports/reports-page'
 import { AuditPage } from '@/features/audit/audit-page'
 import { NotificationsPage } from '@/features/notifications/notifications-page'
+import { EpisPage } from '@/features/resources/epis-page'
 
 function ProtectedLayout() {
   const { session } = useAuth()
@@ -34,7 +35,7 @@ export function App() {
         <Route index element={<DashboardPage />} />
         <Route path="collaborators" element={<ResourcePage resourceKey="collaborators" />} />
         <Route path="sectors" element={<ResourcePage resourceKey="sectors" />} />
-        <Route path="epis" element={<ResourcePage resourceKey="epis" />} />
+        <Route path="epis" element={<EpisPage />} />
         <Route path="categories" element={<ResourcePage resourceKey="categories" />} />
         <Route path="stock" element={<StockPage />} />
         <Route path="deliveries" element={<DeliveriesPage />} />
