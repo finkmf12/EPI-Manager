@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
 
 @RestController
 @Tag(name = "Auditoria")
@@ -29,6 +30,7 @@ public class AuditLogController {
     }
 
     @GetMapping
+    @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Consultar histórico de auditoria da empresa atual")
     public List<AuditLogResponse> list(
