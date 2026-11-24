@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { Plus, RefreshCw, Truck, X } from 'lucide-react'
+import { FileText, Plus, RefreshCw, Truck, X } from 'lucide-react'
 import { apiRequest } from '@/api/client'
 import type { Collaborator, Delivery, Epi, StockLot } from '@/api/types'
 import { useAuth } from '@/app/auth-context'
@@ -7,6 +7,7 @@ import { EmptyState } from '@/components/empty-state'
 import { PageHeader } from '@/components/page-header'
 import { StatusBadge } from '@/components/status-badge'
 import { formatDate, formatDateTime, formatNumber } from '@/lib/utils'
+import { DeliveryReceipt } from '@/features/resources/delivery-receipt'
 
 type DraftLine = {
   key: string
@@ -43,6 +44,7 @@ export function DeliveriesPage() {
   const [dataEntrega, setDataEntrega] = useState(todayLocal())
   const [observacao, setObservacao] = useState('')
   const [lines, setLines] = useState<DraftLine[]>([newLine()])
+  const [receiptDelivery, setReceiptDelivery] = useState<Delivery | null>(null)
 
   async function load() {
     if (!session) return
@@ -200,12 +202,13 @@ export function DeliveriesPage() {
               <td>{formatDate(delivery.dataEntrega)}</td>
               <td>{delivery.itens?.length ?? 0}</td>
               <td><StatusBadge value={delivery.status} /></td>
-              <td><div className="table-actions">{canManage && delivery.status === 'RASCUNHO' && <><button className="table-action table-action--primary" type="button" disabled={working} onClick={() => void transition(delivery.id, 'confirm')}>Confirmar</button><button className="table-action" type="button" disabled={working} onClick={() => void transition(delivery.id, 'cancel')}>Cancelar</button></>}</div></td>
+              <td><div className="table-actions">{delivery.status === 'CONFIRMADA' && <button className="table-action table-action--primary" type="button" onClick={() => setReceiptDelivery(delivery)}><FileText size={13} /> Termo</button>}{canManage && delivery.status === 'RASCUNHO' && <><button className="table-action table-action--primary" type="button" disabled={working} onClick={() => void transition(delivery.id, 'confirm')}>Confirmar</button><button className="table-action" type="button" disabled={working} onClick={() => void transition(delivery.id, 'cancel')}>Cancelar</button></>}</div></td>
             </tr>)}
           </tbody></table></div>
         )}
         <div className="data-panel__footer"><span>Os itens só podem ser alterados enquanto a entrega está em rascunho.</span><span>Confirmação de estoque transacional no PostgreSQL</span></div>
       </section>
+      {receiptDelivery && <DeliveryReceipt delivery={receiptDelivery} collaborator={collaborators.find((person) => person.id === receiptDelivery.colaboradorId)} epis={epis} lots={lots} companyName={session?.companyName} onClose={() => setReceiptDelivery(null)} />}
       <div className="workflow-footnote">EPIs inativos, com CA vencido, lote vencido ou saldo insuficiente serão rejeitados pelo banco na confirmação.</div>
     </div>
   )
