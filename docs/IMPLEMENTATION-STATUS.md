@@ -20,16 +20,17 @@
 ## Front-End
 
 - React 19, TypeScript, Vite e Tailwind CSS v4.
-- Dashboard, consultas cadastrais, catálogo de EPIs com cadastro/edição/inativação, estoque, entregas, devoluções, relatórios, notificações, auditoria e configurações.
-- Emissão de termo de entrega para impressão.
-- Alertas de conformidade de CA e validade de lotes, estoque mínimo e entregas pendentes.
+- Dashboard, gestão de colaboradores, consultas cadastrais, catálogo de EPIs, estoque, entregas, devoluções, relatórios, notificações, auditoria e configurações.
+- Gestão de colaboradores inclui cadastro/edição, validação de matrícula no formulário, vínculo com setor, filtros, indicadores e alteração de situação por perfil.
+- Catálogo de EPIs inclui cadastro/edição/inativação e acompanhamento da validade do CA.
+- Emissão de termo de entrega para impressão e alertas operacionais.
 - Consulte `docs/FRONTEND-STATUS.md` para o detalhamento por módulo.
 
 ## Qualidade e validação
 
 - Pipeline de CI do front-end executa instalação, type-check e build de produção.
-- O Catálogo de EPIs, sua integração de rota e estilos responsivos passaram no GitHub Actions em 24/11/2026.
-- O pipeline de back-end também está versionado; consultar a execução mais recente antes de declarar uma nova validação.
+- O Catálogo de EPIs e a gestão de colaboradores passaram na etapa de type-check/build em 24/11/2026.
+- A execução mais recente de estilos responsivos deve ser consultada no GitHub Actions antes de declarar a etapa totalmente aprovada.
 - Verificações do banco e roteiro de demonstração estão documentados em `database/verification/` e `docs/DEMO-ROTEIRO.md`.
 
 ## Pendências antes de produção
