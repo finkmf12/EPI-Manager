@@ -40,6 +40,6 @@ jobs:
           tag_name: desktop-v1.0.0
           name: EPI Manager para Windows v1.0.0
           target_commitish: ${{ github.sha }}
-          files: desktop/dist/EPI-Manager-Setup-1.0.0.exe
+          files: desktop/dist/*.exe
           draft: false
           prerelease: false
