@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { AlertTriangle, ArrowDownToLine, ClipboardList, Package, Plus, RefreshCw, X } from 'lucide-react'
 import { apiRequest } from '@/api/client'
 import type { Epi, StockBalance, StockLot, StockMovement, StockReceiptResponse, Supplier } from '@/api/types'
@@ -9,10 +9,17 @@ import { StatusBadge } from '@/components/status-badge'
 import { formatCurrency, formatDate, formatDateTime, formatNumber } from '@/lib/utils'
 
 type Tab = 'balances' | 'lots' | 'movements'
+type BalanceFilter = 'ALL' | 'LOW' | 'INACTIVE'
+type LotFilter = 'ALL' | 'VALID' | 'EXPIRING' | 'EXPIRED'
+type MovementFilter = 'ALL' | 'ENTRADA' | 'SAIDA' | 'DEVOLUCAO'
 
 export function StockPage() {
   const { session } = useAuth()
   const [tab, setTab] = useState<Tab>('balances')
+  const [search, setSearch] = useState('')
+  const [balanceFilter, setBalanceFilter] = useState<BalanceFilter>('ALL')
+  const [lotFilter, setLotFilter] = useState<LotFilter>('ALL')
+  const [movementFilter, setMovementFilter] = useState<MovementFilter>('ALL')
   const [balances, setBalances] = useState<StockBalance[]>([])
   const [lots, setLots] = useState<StockLot[]>([])
   const [movements, setMovements] = useState<StockMovement[]>([])
@@ -25,6 +32,7 @@ export function StockPage() {
   const [receiptMessage, setReceiptMessage] = useState('')
   const [receiptError, setReceiptError] = useState('')
   const [form, setForm] = useState({ epiId: '', fornecedorId: '', codigoLote: '', dataFabricacao: '', dataValidade: '', quantidade: '', custoUnitario: '', observacao: '' })
+  const canReceive = session?.companyProfile === 'ADMIN' || session?.companyProfile === 'ALMOXARIFE'
 
   async function load() {
     if (!session) return
@@ -93,6 +101,25 @@ export function StockPage() {
   const availableTotal = balances.reduce((sum, balance) => sum + Number(balance.saldoDisponivel || 0), 0)
   const expiredTotal = balances.reduce((sum, balance) => sum + Number(balance.saldoVencido || 0), 0)
   const belowMinimum = balances.filter((balance) => balance.abaixoDoMinimo).length
+  const today = new Date().toISOString().slice(0, 10)
+  const inThirtyDays = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+  const query = search.trim().toLocaleLowerCase('pt-BR')
+  const filteredBalances = useMemo(() => balances.filter((item) =>
+    (balanceFilter === 'ALL' || (balanceFilter === 'LOW' ? item.abaixoDoMinimo : !item.epiAtivo)) &&
+    (!query || [item.codigo, item.nome].some((value) => value.toLocaleLowerCase('pt-BR').includes(query))),
+  ), [balances, balanceFilter, query])
+  const filteredLots = useMemo(() => lots.filter((lot) => {
+    const expired = Boolean(lot.dataValidade && lot.dataValidade < today)
+    const expiring = Boolean(lot.dataValidade && lot.dataValidade >= today && lot.dataValidade <= inThirtyDays)
+    const matchesStatus = lotFilter === 'ALL' || (lotFilter === 'EXPIRED' ? expired : lotFilter === 'EXPIRING' ? expiring : !expired && !expiring)
+    const matchesSearch = !query || [lot.codigoLote, lot.epiCodigo, lot.epiNome, lot.fornecedorNome ?? ''].some((value) => value.toLocaleLowerCase('pt-BR').includes(query))
+    return matchesStatus && matchesSearch
+  }), [lots, lotFilter, query, today, inThirtyDays])
+  const filteredMovements = useMemo(() => movements.filter((movement) => {
+    const matchesType = movementFilter === 'ALL' || movement.tipo === movementFilter
+    const matchesSearch = !query || [movement.epiCodigo, movement.epiNome, movement.codigoLote, movement.origemTipo ?? ''].some((value) => value.toLocaleLowerCase('pt-BR').includes(query))
+    return matchesType && matchesSearch
+  }), [movements, movementFilter, query])
 
   return (
     <div className="page-stack">
@@ -100,7 +127,7 @@ export function StockPage() {
         eyebrow="CONTROLE DE MATERIAIS"
         title="Estoque"
         description="Acompanhe saldos, lotes e o histórico imutável de movimentações."
-        action={<button className="primary-button" type="button" onClick={() => { setShowReceipt(true); setReceiptError(''); setReceiptMessage('') }}><Plus size={16} /> Registrar recebimento</button>}
+        action={canReceive ? <button className="primary-button" type="button" onClick={() => { setShowReceipt(true); setReceiptError(''); setReceiptMessage('') }}><Plus size={16} /> Registrar recebimento</button> : undefined}
       />
 
       {receiptMessage && <div className="notice notice--success"><ArrowDownToLine size={17} /><span>{receiptMessage}</span></div>}
@@ -139,20 +166,27 @@ export function StockPage() {
           <button className={tab === 'movements' ? 'stock-tab stock-tab--active' : 'stock-tab'} type="button" role="tab" aria-selected={tab === 'movements'} onClick={() => setTab('movements')}>Movimentações</button>
           <button className="tab-refresh" type="button" onClick={() => void load()} disabled={loading}><RefreshCw size={15} className={loading ? 'spin' : ''} /> Atualizar</button>
         </div>
+        <div className="stock-filter-bar">
+          <label className="search-field"><Package size={15} /><input aria-label="Pesquisar estoque" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={tab === 'balances' ? 'Pesquisar EPI por código ou nome' : tab === 'lots' ? 'Pesquisar lote, EPI ou fornecedor' : 'Pesquisar EPI, lote ou origem'} /></label>
+          {tab === 'balances' && <select aria-label="Filtrar saldos" value={balanceFilter} onChange={(event) => setBalanceFilter(event.target.value as BalanceFilter)}><option value="ALL">Todos os saldos</option><option value="LOW">Abaixo do mínimo</option><option value="INACTIVE">EPIs inativos</option></select>}
+          {tab === 'lots' && <select aria-label="Filtrar validade dos lotes" value={lotFilter} onChange={(event) => setLotFilter(event.target.value as LotFilter)}><option value="ALL">Todas as validades</option><option value="VALID">Válidos (mais de 30 dias)</option><option value="EXPIRING">Vencem em até 30 dias</option><option value="EXPIRED">Vencidos</option></select>}
+          {tab === 'movements' && <select aria-label="Filtrar tipo de movimentação" value={movementFilter} onChange={(event) => setMovementFilter(event.target.value as MovementFilter)}><option value="ALL">Todos os movimentos</option><option value="ENTRADA">Entradas</option><option value="SAIDA">Saídas</option><option value="DEVOLUCAO">Devoluções</option></select>}
+          <span className="stock-filter-count">{tab === 'balances' ? filteredBalances.length : tab === 'lots' ? filteredLots.length : filteredMovements.length} registros</span>
+        </div>
         {loading ? <div className="loading-cell loading-pad">Carregando dados de estoque...</div> : tab === 'balances' ? (
-          balances.length === 0 ? <EmptyState title="Estoque ainda sem movimentações" description="Registre o primeiro recebimento para iniciar o controle de saldos." /> :
+          filteredBalances.length === 0 ? <EmptyState title="Estoque ainda sem movimentações" description="Registre o primeiro recebimento para iniciar o controle de saldos." /> :
           <div className="table-wrap"><table className="data-table"><thead><tr><th>Código</th><th>EPI</th><th>Saldo disponível</th><th>Saldo vencido</th><th>Mínimo</th><th>Reposição</th></tr></thead><tbody>
-            {balances.map((item) => <tr key={item.epiId}><td className="cell-primary">{item.codigo}</td><td>{item.nome}<small className="cell-subtext">{item.unidadeMedida}</small></td><td>{formatNumber(item.saldoDisponivel)}</td><td>{formatNumber(item.saldoVencido)}</td><td>{formatNumber(item.estoqueMinimo)}</td><td>{item.abaixoDoMinimo ? <StatusBadge value="ABAIXO DO MINIMO" /> : <StatusBadge value="ATIVO" />}</td></tr>)}
+            {filteredBalances.map((item) => <tr key={item.epiId}><td className="cell-primary">{item.codigo}</td><td>{item.nome}<small className="cell-subtext">{item.unidadeMedida}</small></td><td>{formatNumber(item.saldoDisponivel)}</td><td>{formatNumber(item.saldoVencido)}</td><td>{formatNumber(item.estoqueMinimo)}</td><td>{item.abaixoDoMinimo ? <StatusBadge value="ABAIXO DO MINIMO" /> : <StatusBadge value="ATIVO" />}</td></tr>)}
           </tbody></table></div>
         ) : tab === 'lots' ? (
-          lots.length === 0 ? <EmptyState title="Nenhum lote cadastrado" description="Os lotes serão listados após o primeiro recebimento de estoque." /> :
+          filteredLots.length === 0 ? <EmptyState title="Nenhum lote cadastrado" description="Os lotes serão listados após o primeiro recebimento de estoque." /> :
           <div className="table-wrap"><table className="data-table"><thead><tr><th>Lote</th><th>EPI</th><th>Fornecedor</th><th>Validade</th><th>Quantidade</th><th>Custo unitário</th></tr></thead><tbody>
-            {lots.map((lot) => <tr key={lot.id}><td className="cell-primary">{lot.codigoLote}</td><td>{lot.epiCodigo}<small className="cell-subtext">{lot.epiNome}</small></td><td>{lot.fornecedorNome || '—'}</td><td>{formatDate(lot.dataValidade)}{lot.dataValidade && lot.dataValidade < new Date().toISOString().slice(0, 10) ? <small className="cell-subtext text-danger">Vencido</small> : null}</td><td>{formatNumber(lot.quantidadeDisponivel)} / {formatNumber(lot.quantidadeInicial)}</td><td>{formatCurrency(lot.custoUnitario)}</td></tr>)}
+            {filteredLots.map((lot) => <tr key={lot.id}><td className="cell-primary">{lot.codigoLote}</td><td>{lot.epiCodigo}<small className="cell-subtext">{lot.epiNome}</small></td><td>{lot.fornecedorNome || '—'}</td><td>{formatDate(lot.dataValidade)}{lot.dataValidade && lot.dataValidade < new Date().toISOString().slice(0, 10) ? <small className="cell-subtext text-danger">Vencido</small> : null}</td><td>{formatNumber(lot.quantidadeDisponivel)} / {formatNumber(lot.quantidadeInicial)}</td><td>{formatCurrency(lot.custoUnitario)}</td></tr>)}
           </tbody></table></div>
         ) : (
-          movements.length === 0 ? <EmptyState title="Nenhuma movimentação registrada" description="Entradas, saídas e devoluções aparecerão no histórico após serem confirmadas." /> :
+          filteredMovements.length === 0 ? <EmptyState title="Nenhuma movimentação registrada" description="Entradas, saídas e devoluções aparecerão no histórico após serem confirmadas." /> :
           <div className="table-wrap"><table className="data-table"><thead><tr><th>Data</th><th>Tipo</th><th>EPI</th><th>Lote</th><th>Quantidade</th><th>Origem</th></tr></thead><tbody>
-            {movements.map((movement) => <tr key={movement.id}><td>{formatDateTime(movement.createdAt)}</td><td><StatusBadge value={movement.tipo} /></td><td>{movement.epiCodigo}<small className="cell-subtext">{movement.epiNome}</small></td><td>{movement.codigoLote}</td><td>{formatNumber(movement.quantidade)}</td><td>{movement.origemTipo || '—'}</td></tr>)}
+            {filteredMovements.map((movement) => <tr key={movement.id}><td>{formatDateTime(movement.createdAt)}</td><td><StatusBadge value={movement.tipo} /></td><td>{movement.epiCodigo}<small className="cell-subtext">{movement.epiNome}</small></td><td>{movement.codigoLote}</td><td>{formatNumber(movement.quantidade)}</td><td>{movement.origemTipo || '—'}</td></tr>)}
           </tbody></table></div>
         )}
         <div className="data-panel__footer"><span>O histórico de movimentações é imutável.</span><span>Valores consultados diretamente na API</span></div>
