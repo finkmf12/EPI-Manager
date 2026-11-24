@@ -49,6 +49,11 @@ O pacote de desenvolvimento contém:
 - `docs/QUALITY-GATES.md`: critérios objetivos para demonstração, homologação e produção.
 - `.github/workflows/frontend-ci.yml`: pipeline para instalação, type-check e build do front-end.
 
+## Integração contínua
+
+- Workflows de front-end e back-end estão versionados. As primeiras execuções falharam antes de compilar porque `frontend/` e `backend/pom.xml` não existem no checkout remoto; ver `docs/CI-STATUS.md`.
+- Os gatilhos foram ajustados para aguardar alterações nos diretórios de código. Nenhum build foi aprovado ainda.
+
 ## Regras de segurança
 
 - Não adicionar `.env`, tokens, senhas, chaves Supabase ou credenciais JDBC ao Git.
