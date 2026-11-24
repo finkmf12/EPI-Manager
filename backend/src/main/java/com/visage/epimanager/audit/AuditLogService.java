@@ -1,7 +1,5 @@
 package com.visage.epimanager.audit;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
@@ -13,11 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AuditLogService {
     private final JdbcTemplate jdbcTemplate;
-    private final ObjectMapper objectMapper;
-
-    public AuditLogService(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper) {
+    public AuditLogService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.objectMapper = objectMapper;
     }
 
     public void record(
@@ -28,24 +23,49 @@ public class AuditLogService {
             UUID recordId,
             Map<String, Object> oldData,
             Map<String, Object> newData) {
-        try {
-            jdbcTemplate.update(
-                    """
-                    INSERT INTO epi_manager.logs_auditoria
-                        (empresa_id, usuario_id, acao, entidade, registro_id,
-                         dados_anteriores, dados_novos)
-                    VALUES (?, ?, ?, ?, ?, ?::jsonb, ?::jsonb)
-                    """,
-                    companyId,
-                    userId,
-                    action,
-                    entity,
-                    recordId,
-                    oldData == null ? null : objectMapper.writeValueAsString(oldData),
-                    newData == null ? null : objectMapper.writeValueAsString(newData));
-        } catch (JsonProcessingException exception) {
-            throw new IllegalStateException("Não foi possível registrar a auditoria da operação.", exception);
+        jdbcTemplate.update(
+                """
+                INSERT INTO epi_manager.logs_auditoria
+                    (empresa_id, usuario_id, acao, entidade, registro_id,
+                     dados_anteriores, dados_novos)
+                VALUES (?, ?, ?, ?, ?, ?::jsonb, ?::jsonb)
+                """,
+                companyId,
+                userId,
+                action,
+                entity,
+                recordId,
+                toJson(oldData),
+                toJson(newData));
+    }
+
+    private String toJson(Map<String, Object> values) {
+        if (values == null) return null;
+        StringBuilder json = new StringBuilder("{");
+        boolean first = true;
+        for (Map.Entry<String, Object> entry : values.entrySet()) {
+            if (!first) json.append(',');
+            first = false;
+            json.append('"').append(escapeJson(entry.getKey())).append('"').append(':');
+            Object value = entry.getValue();
+            if (value == null) {
+                json.append("null");
+            } else if (value instanceof Number || value instanceof Boolean) {
+                json.append(value);
+            } else {
+                json.append('"').append(escapeJson(String.valueOf(value))).append('"');
+            }
         }
+        return json.append('}').toString();
+    }
+
+    private String escapeJson(String value) {
+        return value.replace("\\\\", "\\\\\\\\")
+                .replace("\\"", "\\\\\"")
+                .replace("\\n", "\\\\n")
+                .replace("\\r", "\\\\r")
+                .replace("\\t", "\\\\t");
+
     }
 
     @Transactional(readOnly = true)
