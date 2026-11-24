@@ -21,9 +21,10 @@
 ## Front-End
 
 - React 19, TypeScript, Vite e Tailwind CSS v4.
-- Dashboard, gestão de colaboradores e setores, consultas cadastrais, catálogo de EPIs, estoque, entregas, devoluções, relatórios, notificações, auditoria e configurações.
+- Dashboard, gestão de colaboradores, setores e fornecedores, consultas cadastrais, catálogo de EPIs, estoque, entregas, devoluções, relatórios, notificações, auditoria e configurações.
 - Gestão de colaboradores inclui cadastro/edição, validação de matrícula, vínculo com setor, filtros, indicadores e alteração de situação por perfil.
 - Gestão de setores inclui cadastro/edição, pesquisa, filtros, contagem de vínculos, validação de nome duplicado na API e inativação/reativação por ADMIN.
+- Gestão de fornecedores inclui cadastro/edição, pesquisa, filtros, validação de CNPJ com dígitos verificadores e unicidade por empresa na API, além de inativação/reativação por ADMIN preservando os registros históricos.
 - Catálogo de EPIs inclui cadastro/edição/inativação e acompanhamento da validade do CA.
 - Emissão de termo de entrega para impressão e alertas operacionais.
 - Consulte `docs/FRONTEND-STATUS.md` para o detalhamento por módulo.
