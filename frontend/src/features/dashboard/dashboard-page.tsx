@@ -4,6 +4,7 @@ import {
   AlertTriangle,
   ArrowUpRight,
   ClipboardList,
+  Database,
   Package,
   ShieldCheck,
   Truck,
@@ -30,6 +31,10 @@ export function DashboardPage() {
   const [data, setData] = useState<DashboardData>({})
   const [loading, setLoading] = useState(true)
   const [errors, setErrors] = useState<string[]>([])
+  const [refreshKey, setRefreshKey] = useState(0)
+  const [seedLoading, setSeedLoading] = useState(false)
+  const [seedError, setSeedError] = useState('')
+  const [seedSuccess, setSeedSuccess] = useState('')
 
   useEffect(() => {
     if (!session) return
@@ -69,7 +74,31 @@ export function DashboardPage() {
       setLoading(false)
     })
     return () => { active = false }
-  }, [session])
+  }, [session, refreshKey])
+
+  async function loadDemoData() {
+    if (!session) return
+    setSeedLoading(true)
+    setSeedError('')
+    setSeedSuccess('')
+    try {
+      const result = await apiRequest<{ alreadyLoaded: boolean; message: string }>(
+        '/api/v1/demo/seed', { method: 'POST' }, session.accessToken,
+      )
+      setSeedSuccess(result.message)
+      setRefreshKey((value) => value + 1)
+    } catch (error) {
+      setSeedError(error instanceof Error ? error.message : 'Não foi possível carregar os dados demonstrativos.')
+    } finally {
+      setSeedLoading(false)
+    }
+  }
+
+  const showDemoLoader = !loading
+    && session?.companyProfile === 'ADMIN'
+    && (data.collaborators?.length ?? 0) === 0
+    && (data.epis?.length ?? 0) === 0
+    && (data.deliveries?.length ?? 0) === 0
 
   const belowMinimum = data.balances?.filter((balance) => balance.abaixoDoMinimo).length
   const activeDeliveries = data.deliveries?.filter((delivery) => delivery.status === 'RASCUNHO').length
@@ -86,8 +115,11 @@ export function DashboardPage() {
         eyebrow="PAINEL OPERACIONAL"
         title="Visão geral"
         description={`Acompanhe a operação de ${session?.companyName ?? 'sua empresa'} em um só lugar.`}
-        action={<span className="live-pill"><span /> Sessão autenticada</span>}
+        action={<div className="dashboard-actions"><span className="live-pill"><span /> Sessão autenticada</span>{showDemoLoader && <button className="primary-button demo-seed-button" type="button" onClick={() => void loadDemoData()} disabled={seedLoading}><Database size={15} />{seedLoading ? 'Preparando demonstração...' : 'Carregar dados demonstrativos'}</button>}</div>}
       />
+
+      {seedError && <div className="notice notice--danger"><AlertTriangle size={18} /><div><strong>Não foi possível preparar a demonstração.</strong><p>{seedError}</p></div></div>}
+      {seedSuccess && <div className="notice notice--success"><ShieldCheck size={18} /><div><strong>{seedSuccess}</strong><p>Os registros são fictícios. Os identificadores de CA são ilustrativos e não substituem certificados reais.</p></div></div>}
 
       {errors.length > 0 && (
         <div className="notice notice--warning">
