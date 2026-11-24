@@ -12,6 +12,7 @@ import {
   Menu,
   Package,
   RotateCcw,
+  FileBarChart,
   Settings,
   ShieldCheck,
   Truck,
@@ -31,6 +32,7 @@ const navigation = [
   { label: 'Entregas', to: '/app/deliveries', icon: Truck },
   { label: 'Devoluções', to: '/app/returns', icon: RotateCcw },
   { label: 'Fornecedores', to: '/app/suppliers', icon: ArrowLeftRight },
+  { label: 'Relatórios', to: '/app/reports', icon: FileBarChart },
 ]
 
 const pageTitles: Record<string, string> = {
@@ -43,6 +45,7 @@ const pageTitles: Record<string, string> = {
   '/app/deliveries': 'Entregas',
   '/app/returns': 'Devoluções',
   '/app/suppliers': 'Fornecedores',
+  '/app/reports': 'Relatórios',
   '/app/settings': 'Configurações',
 }
 
