@@ -1,61 +1,61 @@
 # EPI Manager
 
-Sistema web para gerenciamento de Equipamentos de Proteção Individual (EPIs), com arquitetura multiempresa.
-
-> **Status:** desenvolvimento ativo. O banco Supabase está provisionado e protegido. A API Java/Spring Boot e o frontend React estão em implementação; ainda não há publicação de produção.
+Sistema web multiempresa para gestão de Equipamentos de Proteção Individual (EPIs), com cadastro de colaboradores, setores, catálogo, fornecedores, estoque por lote, entregas e devoluções.
 
 ## Arquitetura
 
-- **Frontend:** React, TypeScript, Vite, Tailwind CSS e shadcn/ui.
-- **Backend:** Java 21, Spring Boot, Spring Security, JWT, Spring Data JPA e Flyway.
-- **Banco:** PostgreSQL 17 gerenciado pelo Supabase.
-- **Hospedagem planejada:** frontend na Vercel; API Java em serviço compatível com contêineres.
+- **Front-end:** React 19, TypeScript, Vite 8, Tailwind CSS v4 e React Router.
+- **Back-end:** Java 21, Spring Boot 4.2, Spring Security, JWT, Spring Data JPA/JDBC.
+- **Banco:** PostgreSQL 17 no Supabase, schema privado `epi_manager`, RLS e isolamento por empresa.
+- **Hospedagem prevista:** Vercel para o front-end; serviço Java em host compatível com contêiner.
 
-O navegador consome somente a API REST. Credenciais administrativas do Supabase e a senha JDBC nunca devem ser incluídas no frontend ou versionadas.
+## Funcionalidades implementadas no código
 
-## Módulos planejados
+- Autenticação e seleção de empresa.
+- Dashboard operacional.
+- Cadastros de colaboradores, setores, categorias, EPIs e fornecedores.
+- Recebimento de estoque por lote e consulta de saldos/movimentações.
+- Entregas e devoluções com rascunho, confirmação e cancelamento.
+- API REST documentada com OpenAPI/Swagger.
 
-- Autenticação, usuários e seleção de empresa
-- Empresas e setores
-- Colaboradores
-- Categorias, catálogo de EPIs e fornecedores
-- Estoque por lote e movimentações
-- Entregas, devoluções e histórico
-- Alertas, relatórios e auditoria
+A presença de uma funcionalidade no código não significa que ela já foi homologada em ambiente publicado. Consulte `docs/DELIVERY-STATUS.md`, `docs/TEST-RESULTS.md` e `docs/SECURITY-REVIEW.md` para ver o que está implementado, validado e pendente.
 
-## Estrutura do projeto
+## Executar localmente
 
-```text
-backend/     API Java / Spring Boot
-frontend/    Aplicação React / Vite
-database/    Migrações e verificações PostgreSQL
-docs/        Arquitetura, segurança e contratos
-.github/     CI
+### Front-end
+
+```bash
+cd frontend
+cp .env.example .env.local
+npm install
+npm run build
+npm run dev
 ```
 
-## Segurança e regras de negócio
+Configure `VITE_API_URL` no `.env.local`. O navegador comunica-se somente com o back-end; não use credenciais administrativas do Supabase no front-end.
 
-- Isolamento multiempresa com Row Level Security (RLS).
-- Papel JDBC da aplicação separado de credenciais administrativas.
-- Estoque, entregas e devoluções executados em transações.
-- Ledger de movimentações e auditoria protegidos contra exclusão pelo papel de runtime.
-- Segredos fornecidos exclusivamente por variáveis de ambiente.
-- Dados pessoais devem ter acesso restrito e tratamento compatível com a LGPD.
+### Back-end
 
-## Estado da validação
+```bash
+cd backend
+cp .env.example .env
+mvn --batch-mode verify
+```
 
-Os testes transacionais de estoque, entrega e devolução foram executados no PostgreSQL em transações revertidas. A compilação integral Java/React e os deploys ainda precisam ser concluídos em ambiente com acesso às dependências.
+Preencha as variáveis de ambiente localmente, sem versioná-las. A aplicação precisa da conexão JDBC dedicada `epi_manager_app` e da chave JWT mantida em um cofre de segredos.
 
-## Documentação original
+## Segurança
 
-O escopo acadêmico inicial foi elaborado com base no documento “Documento de Requisitos — Sistema de Gestão de EPI”, utilizado na Avaliação Prática 2: Modelagem de Sistemas. A implementação atual amplia esse escopo com autenticação, multiempresa, trilha de auditoria e controles de segurança.
+O back-end usa o papel dedicado `epi_manager_app`, sem `SUPERUSER` ou `BYPASSRLS`, e define o contexto da empresa dentro da transação após validar o vínculo do usuário. Não commitar `.env`, senhas, chaves JWT, tokens ou dados reais de colaboradores.
 
-## Próximas etapas
+## GitHub e implantação
 
-- [ ] Versionar a aplicação completa neste repositório.
-- [ ] Executar build e testes automatizados em CI.
-- [ ] Configurar as variáveis de ambiente de produção.
-- [ ] Publicar API e frontend em ambientes separados.
-- [ ] Executar homologação ponta a ponta.
+Repositório: [finkmf12/EPI-Manager](https://github.com/finkmf12/EPI-Manager).
 
-**Licença:** ainda não definida.
+O projeto Vercel `epi-manager-web` foi criado e configurado para Vite, com diretório raiz `frontend` e saída `dist`; ainda não há deploy homologado. O código-fonte completo precisa ser enviado ao repositório remoto antes de conectar o deploy automático.
+
+## Apresentação acadêmica
+
+Consulte [docs/DEMO-ROTEIRO.md](docs/DEMO-ROTEIRO.md) para uma sequência de demonstração, conceitos técnicos e perguntas prováveis da banca.
+
+**Não usar em produção** até concluir os testes de build, integração HTTP, segurança, configuração dos segredos e homologação dos fluxos completos.
