@@ -4,6 +4,7 @@ import com.visage.epimanager.catalog.dto.CategoryRequest;
 import com.visage.epimanager.catalog.dto.CategoryResponse;
 import com.visage.epimanager.catalog.persistence.CategoryEntity;
 import com.visage.epimanager.catalog.persistence.CategoryRepository;
+import com.visage.epimanager.common.ConflictException;
 import com.visage.epimanager.common.ResourceNotFoundException;
 import com.visage.epimanager.security.TenantSessionContext;
 import java.util.List;
@@ -43,8 +44,10 @@ public class CategoryService {
     @Transactional
     public CategoryResponse create(Jwt jwt, CategoryRequest request) {
         UUID companyId = activateTenant(jwt);
+        String nome = request.nome().trim();
+        validateUniqueName(companyId, nome, null);
         CategoryEntity saved = repository.save(new CategoryEntity(
-                companyId, request.nome().trim(), normalizeOptional(request.descricao())));
+                companyId, nome, normalizeOptional(request.descricao())));
         return CategoryResponse.from(saved);
     }
 
@@ -54,9 +57,11 @@ public class CategoryService {
         CategoryEntity category = repository.findByIdAndEmpresaId(categoryId, companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada."));
         if (!category.isAtivo()) {
-            throw new IllegalArgumentException("Não é permitido editar uma categoria inativa.");
+            throw new ConflictException("Não é permitido editar uma categoria inativa.");
         }
-        category.update(request.nome().trim(), normalizeOptional(request.descricao()));
+        String nome = request.nome().trim();
+        validateUniqueName(companyId, nome, categoryId);
+        category.update(nome, normalizeOptional(request.descricao()));
         return CategoryResponse.from(category);
     }
 
@@ -66,6 +71,22 @@ public class CategoryService {
         CategoryEntity category = repository.findByIdAndEmpresaId(categoryId, companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada."));
         category.deactivate();
+    }
+
+    @Transactional
+    public CategoryResponse activate(Jwt jwt, UUID categoryId) {
+        UUID companyId = activateTenant(jwt);
+        CategoryEntity category = repository.findByIdAndEmpresaId(categoryId, companyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada."));
+        category.activate();
+        return CategoryResponse.from(category);
+    }
+
+    private void validateUniqueName(UUID companyId, String nome, UUID ignoredId) {
+        boolean exists = ignoredId == null
+                ? repository.existsByEmpresaIdAndNomeIgnoreCase(companyId, nome)
+                : repository.existsByEmpresaIdAndNomeIgnoreCaseAndIdNot(companyId, nome, ignoredId);
+        if (exists) throw new ConflictException("Já existe uma categoria com este nome nesta empresa.");
     }
 
     private UUID activateTenant(Jwt jwt) {
