@@ -9,6 +9,7 @@ import { SettingsPage } from '@/features/resources/settings-page'
 import { StockPage } from '@/features/stock/stock-page'
 import { DeliveriesPage } from '@/features/resources/deliveries-page'
 import { ReturnsPage } from '@/features/resources/returns-page'
+import { ReportsPage } from '@/features/reports/reports-page'
 
 function ProtectedLayout() {
   const { session } = useAuth()
@@ -36,6 +37,7 @@ export function App() {
         <Route path="stock" element={<StockPage />} />
         <Route path="deliveries" element={<DeliveriesPage />} />
         <Route path="returns" element={<ReturnsPage />} />
+        <Route path="reports" element={<ReportsPage />} />
         <Route path="suppliers" element={<ResourcePage resourceKey="suppliers" />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
