@@ -5,6 +5,7 @@ import com.visage.epimanager.collaborator.dto.CreateColaboradorRequest;
 import com.visage.epimanager.collaborator.dto.UpdateColaboradorRequest;
 import com.visage.epimanager.collaborator.persistence.ColaboradorEntity;
 import com.visage.epimanager.collaborator.persistence.ColaboradorRepository;
+import com.visage.epimanager.common.ConflictException;
 import com.visage.epimanager.common.ResourceNotFoundException;
 import com.visage.epimanager.sector.persistence.SetorRepository;
 import com.visage.epimanager.security.TenantSessionContext;
@@ -52,6 +53,7 @@ public class ColaboradorService {
     public ColaboradorResponse create(Jwt jwt, CreateColaboradorRequest request) {
         UUID companyId = activateTenant(jwt);
         validateSector(companyId, request.setorId());
+        validateUniqueMatricula(companyId, request.matricula().trim(), null);
         ColaboradorEntity saved = repository.save(new ColaboradorEntity(
                 companyId,
                 request.setorId(),
@@ -68,6 +70,7 @@ public class ColaboradorService {
     public ColaboradorResponse update(Jwt jwt, UUID colaboradorId, UpdateColaboradorRequest request) {
         UUID companyId = activateTenant(jwt);
         validateSector(companyId, request.setorId());
+        validateUniqueMatricula(companyId, request.matricula().trim(), colaboradorId);
         ColaboradorEntity entity = repository.findByIdAndEmpresaId(colaboradorId, companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Colaborador não encontrado."));
         entity.update(
@@ -98,6 +101,15 @@ public class ColaboradorService {
         UUID userId = UUID.fromString(jwt.getSubject());
         tenantSessionContext.activate(companyId, userId);
         return companyId;
+    }
+
+    private void validateUniqueMatricula(UUID companyId, String matricula, UUID ignoredId) {
+        boolean alreadyExists = ignoredId == null
+                ? repository.existsByEmpresaIdAndMatriculaIgnoreCase(companyId, matricula)
+                : repository.existsByEmpresaIdAndMatriculaIgnoreCaseAndIdNot(companyId, matricula, ignoredId);
+        if (alreadyExists) {
+            throw new ConflictException("Já existe um colaborador com esta matrícula nesta empresa.");
+        }
     }
 
     private void validateSector(UUID companyId, UUID setorId) {
