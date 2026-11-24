@@ -16,6 +16,7 @@ import { EpisPage } from '@/features/resources/epis-page'
 import { CollaboratorsPage } from '@/features/resources/collaborators-page'
 import { SectorsPage } from '@/features/resources/sectors-page'
 import { SuppliersPage } from '@/features/resources/suppliers-page'
+import { CategoriesPage } from '@/features/resources/categories-page'
 
 function ProtectedLayout() {
   const { session } = useAuth()
@@ -39,7 +40,7 @@ export function App() {
         <Route path="collaborators" element={<CollaboratorsPage />} />
         <Route path="sectors" element={<SectorsPage />} />
         <Route path="epis" element={<EpisPage />} />
-        <Route path="categories" element={<ResourcePage resourceKey="categories" />} />
+        <Route path="categories" element={<CategoriesPage />} />
         <Route path="stock" element={<StockPage />} />
         <Route path="deliveries" element={<DeliveriesPage />} />
         <Route path="returns" element={<ReturnsPage />} />
