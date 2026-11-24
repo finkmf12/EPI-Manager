@@ -14,3 +14,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </BrowserRouter>
   </StrictMode>,
 )
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {
+      // A aplicação continua funcionando normalmente se o service worker não puder ser registrado.
+    })
+  })
+}
