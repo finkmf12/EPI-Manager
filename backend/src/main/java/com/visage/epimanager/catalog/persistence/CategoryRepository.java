@@ -10,4 +10,6 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, UUID> 
     List<CategoryEntity> findAllByEmpresaIdAndAtivoTrueOrderByNome(UUID empresaId);
     Optional<CategoryEntity> findByIdAndEmpresaId(UUID id, UUID empresaId);
     Optional<CategoryEntity> findByIdAndEmpresaIdAndAtivoTrue(UUID id, UUID empresaId);
+    boolean existsByEmpresaIdAndNomeIgnoreCase(UUID empresaId, String nome);
+    boolean existsByEmpresaIdAndNomeIgnoreCaseAndIdNot(UUID empresaId, String nome, UUID id);
 }
