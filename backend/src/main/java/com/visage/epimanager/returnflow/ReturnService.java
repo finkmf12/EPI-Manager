@@ -1,5 +1,6 @@
 package com.visage.epimanager.returnflow;
 
+import com.visage.epimanager.audit.AuditLogService;
 import com.visage.epimanager.common.ConflictException;
 import com.visage.epimanager.common.PostgresBusinessRuleTranslator;
 import com.visage.epimanager.common.ResourceNotFoundException;
@@ -11,6 +12,7 @@ import com.visage.epimanager.security.TenantSessionContext;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.dao.DataAccessException;
@@ -24,10 +26,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReturnService {
     private final JdbcTemplate jdbcTemplate;
     private final TenantSessionContext tenantSessionContext;
+    private final AuditLogService auditLogService;
 
-    public ReturnService(JdbcTemplate jdbcTemplate, TenantSessionContext tenantSessionContext) {
+    public ReturnService(JdbcTemplate jdbcTemplate, TenantSessionContext tenantSessionContext, AuditLogService auditLogService) {
         this.jdbcTemplate = jdbcTemplate;
         this.tenantSessionContext = tenantSessionContext;
+        this.auditLogService = auditLogService;
     }
 
     @Transactional
@@ -72,6 +76,9 @@ public class ReturnService {
             throw PostgresBusinessRuleTranslator.translate(exception);
         }
 
+        auditLogService.record(tenant.companyId(), tenant.userId(), "CRIAR_RASCUNHO", "DEVOLUCAO", returnId,
+                null, Map.of("status", "RASCUNHO", "entregaId", request.entregaId().toString(),
+                        "quantidadeItens", request.itens().size()));
         return getById(tenant.companyId(), returnId);
     }
 
@@ -118,6 +125,8 @@ public class ReturnService {
         } catch (DataAccessException exception) {
             throw PostgresBusinessRuleTranslator.translate(exception);
         }
+        auditLogService.record(tenant.companyId(), tenant.userId(), "CONFIRMAR", "DEVOLUCAO", returnId,
+                Map.of("status", "RASCUNHO"), Map.of("status", "CONFIRMADA"));
         return getById(tenant.companyId(), returnId);
     }
 
@@ -140,6 +149,8 @@ public class ReturnService {
         } catch (DataAccessException exception) {
             throw PostgresBusinessRuleTranslator.translate(exception);
         }
+        auditLogService.record(tenant.companyId(), tenant.userId(), "CANCELAR", "DEVOLUCAO", returnId,
+                Map.of("status", "RASCUNHO"), Map.of("status", "CANCELADA"));
         return getById(tenant.companyId(), returnId);
     }
 
