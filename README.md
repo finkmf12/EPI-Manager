@@ -62,6 +62,11 @@ Repositório: [finkmf12/EPI-Manager](https://github.com/finkmf12/EPI-Manager).
 
 O projeto Vercel `epi-manager-web` foi criado e configurado para Vite, com diretório raiz `frontend` e saída `dist`; ainda não há deploy homologado. O código-fonte completo precisa ser enviado ao repositório remoto antes de conectar o deploy automático.
 
+
+## Documentação do projeto
+
+- [Regras de Negócio (RN01–RN14)](docs/REGRAS-DE-NEGOCIO.md) — restrições e condições que o sistema deve respeitar.
+
 ## Estado da entrega
 
 Leia, nesta ordem:
