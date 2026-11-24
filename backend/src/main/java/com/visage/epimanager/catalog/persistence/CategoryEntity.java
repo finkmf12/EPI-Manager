@@ -50,4 +50,8 @@ public class CategoryEntity {
     public void deactivate() {
         this.ativo = false;
     }
+
+    public void activate() {
+        this.ativo = true;
+    }
 }
