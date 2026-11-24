@@ -200,3 +200,15 @@ export interface EpiReturn {
   createdAt: string
   itens: ReturnItem[]
 }
+
+export interface AuditLog {
+  id: string
+  usuarioId?: string | null
+  usuarioNome?: string | null
+  acao: string
+  entidade: string
+  registroId?: string | null
+  dadosAnteriores?: string | null
+  dadosNovos?: string | null
+  createdAt: string
+}
