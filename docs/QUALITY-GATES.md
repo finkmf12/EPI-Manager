@@ -2,7 +2,7 @@
 
 Este documento define critérios objetivos para considerar uma versão pronta para demonstração, homologação ou produção. Marcar um item exige evidência executável, não apenas a existência de código.
 
-## Gate 1 — Repositório e configuração
+## Portão 1 — Repositório e configuração
 
 - [ ] Todo o código-fonte de `backend/`, `frontend/`, `database/`, `docs/` e `.github/` está versionado no repositório remoto.
 - [ ] `git status` limpo e histórico de commits revisado.
@@ -10,7 +10,7 @@ Este documento define critérios objetivos para considerar uma versão pronta pa
 - [ ] `.env.example` contém somente nomes e exemplos não secretos.
 - [ ] Lockfile npm gerado e versionado; instalação reproduzível com `npm ci`.
 
-## Gate 2 — Build automatizado
+## Portão 2 — Build automatizado
 
 - [ ] Front-end: `npm ci` concluído.
 - [ ] Front-end: `npm run typecheck` concluído sem erros.
@@ -19,7 +19,7 @@ Este documento define critérios objetivos para considerar uma versão pronta pa
 - [ ] GitHub Actions verde para a revisão candidata.
 - [ ] Imagem Docker do back-end construída com sucesso.
 
-## Gate 3 — Segurança e isolamento
+## Portão 3 — Segurança e isolamento
 
 - [ ] Login rejeita senha incorreta e conta inativa com resposta genérica.
 - [ ] Token de seleção de empresa não acessa endpoints de negócio.
@@ -31,7 +31,7 @@ Este documento define critérios objetivos para considerar uma versão pronta pa
 - [ ] Swagger e cadastro público permanecem protegidos/desabilitados por padrão.
 - [ ] Segredos estão em cofre de variáveis do host, nunca no Git ou no bundle do navegador.
 
-## Gate 4 — Fluxos funcionais
+## Portão 4 — Fluxos funcionais
 
 - [ ] Criar empresa e primeiro usuário no fluxo de onboarding autorizado.
 - [ ] Entrar e selecionar uma empresa.
@@ -47,7 +47,7 @@ Este documento define critérios objetivos para considerar uma versão pronta pa
 - [ ] Validar lotes vencidos e alertas de estoque mínimo.
 - [ ] Validar estados vazios, carregamento, erro de API e confirmação de ações destrutivas na interface.
 
-## Gate 5 — Homologação e apresentação
+## Portão 5 — Homologação e apresentação
 
 - [ ] Base isolada com dados fictícios e roteiro repetível.
 - [ ] Executar roteiro de `DEMO-ROTEIRO.md` do login à devolução.
@@ -58,6 +58,6 @@ Este documento define critérios objetivos para considerar uma versão pronta pa
 
 ## Critérios de liberação
 
-- **Demonstração acadêmica:** Gates 1, 2 e 4 concluídos para os fluxos que serão apresentados; Gate 3 validado nos cenários críticos.
-- **Homologação:** todos os Gates 1–5 concluídos em ambiente de teste.
-- **Produção:** todos os Gates 1–5 concluídos, revisão de segurança aprovada, backup/restore testado, monitoramento ativo e plano de rollback documentado.
+- **Demonstração acadêmica:** Portão 1, 2 e 4 concluídos para os fluxos que serão apresentados; Gate 3 validado nos cenários críticos.
+- **Homologação:** todos os Portões 1–5 concluídos em ambiente de teste.
+- **Produção:** todos os Portões 1–5 concluídos, revisão de segurança aprovada, backup/restore testado, monitoramento ativo e plano de rollback documentado.
