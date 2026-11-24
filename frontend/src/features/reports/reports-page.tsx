@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Download, FileSpreadsheet, FileText, Printer, RefreshCw } from 'lucide-react'
+import { FileSpreadsheet, FileText, Printer, RefreshCw } from 'lucide-react'
 import { apiRequest } from '@/api/client'
 import type { Collaborator, Delivery, EpiReturn, StockBalance } from '@/api/types'
 import { useAuth } from '@/app/auth-context'
