@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import {
   Activity,
+  History,
   ArrowLeftRight,
   Box,
   Building2,
@@ -33,6 +34,7 @@ const navigation = [
   { label: 'Devoluções', to: '/app/returns', icon: RotateCcw },
   { label: 'Fornecedores', to: '/app/suppliers', icon: ArrowLeftRight },
   { label: 'Relatórios', to: '/app/reports', icon: FileBarChart },
+  { label: 'Auditoria', to: '/app/audit', icon: History, adminOnly: true },
 ]
 
 const pageTitles: Record<string, string> = {
@@ -46,6 +48,7 @@ const pageTitles: Record<string, string> = {
   '/app/returns': 'Devoluções',
   '/app/suppliers': 'Fornecedores',
   '/app/reports': 'Relatórios',
+  '/app/audit': 'Auditoria',
   '/app/settings': 'Configurações',
 }
 
@@ -73,7 +76,7 @@ export function AppLayout() {
 
         <div className="sidebar-section-label">MENU PRINCIPAL</div>
         <nav className="sidebar-nav" aria-label="Navegação principal">
-          {navigation.map((item) => {
+          {navigation.filter((item) => !item.adminOnly || session?.companyProfile === 'ADMIN').map((item) => {
             const Icon = item.icon
             return (
               <NavLink
