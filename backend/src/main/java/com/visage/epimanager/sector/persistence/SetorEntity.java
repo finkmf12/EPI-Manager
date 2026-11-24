@@ -47,7 +47,6 @@ public class SetorEntity {
         this.descricao = descricao;
     }
 
-    public void deactivate() {
-        this.ativo = false;
-    }
+    public void deactivate() { this.ativo = false; }
+    public void activate() { this.ativo = true; }
 }
